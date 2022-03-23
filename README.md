@@ -13,7 +13,7 @@ There are two versions in this repository.
 
     
 
-*  SP2C (in SP2C directory)
+* SP2C (in SP2C directory)
 
   - implements only collision detections. (whether two shapes are colliding and a manifold)
 
