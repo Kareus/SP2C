@@ -54,7 +54,7 @@ There are two versions in this repository.
 
   - You can build `main_SP2C.cpp`  with defining in `test_def.h`,
 
-    ```
+    ```c++
     #define __MAIN_SP2C__
     ```
 
