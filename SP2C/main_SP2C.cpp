@@ -222,41 +222,111 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 		}
 	}
 
-	sf::VertexArray arr(sf::LinesStrip);
-	const double theta = 10 * RAD;
-	double angle = 0;
-	sf::Vector2f p;
+	static const int roundrect_mode = 2;
 
-	if (shapes.size() == 3)
+	if (roundrect_mode == 1) //method 1 : draw each shapes
 	{
-		SPC_Circle* c1 = reinterpret_cast<SPC_Circle*>(shapes[0]);
-		SPC_Circle* c2 = reinterpret_cast<SPC_Circle*>(shapes[2]);
-
-		if (c1->position.x == c2->position.x)
+		for (auto& shape : shapes)
 		{
-			angle = -PI;
-			do
+			switch (shape->type)
 			{
-				p.x = c1->position.x + c1->radius * cos(angle);
-				p.y = c1->position.y + c1->radius * sin(angle);
-				arr.append(p);
-				angle += theta;
-			} while (angle <= 0);
-
-			angle = 0;
-			do
+			case ShapeType::AABB:
 			{
-				p.x = c2->position.x + c2->radius * cos(angle);
-				p.y = c2->position.y + c2->radius * sin(angle);
-				arr.append(p);
-				angle += theta;
-			} while (angle <= PI);
+				SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shape);
+				sf::RectangleShape rect;
+				auto extent = a->GetExtent();
+				auto pos = a->GetCenter();
+				rect.setSize(sf::Vector2f(extent.x * 2, extent.y * 2));
+				rect.setOrigin(sf::Vector2f(extent.x, extent.y));
+				rect.setPosition(pos.x, pos.y);
+				rect.setFillColor(sf::Color::Transparent);
+				rect.setOutlineColor(color);
+				rect.setOutlineThickness(1);
+				target.draw(rect);
+				break;
+			}
 
-			arr.append(sf::Vector2f(c1->position.x - c1->radius, c1->position.y));
+			case ShapeType::Circle:
+			{
+				SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shape);
+				sf::CircleShape circle;
+				circle.setRadius(c->radius);
+				circle.setOrigin(c->radius, c->radius);
+				circle.setPosition(c->position.x, c->position.y);
+				circle.setFillColor(sf::Color::Transparent);
+				circle.setOutlineColor(color);
+				circle.setOutlineThickness(1);
+				target.draw(circle);
+				break;
+			}
+			}
+		}
+	}
+	else //method 2 : draw outline
+	{
+		sf::VertexArray arr(sf::LinesStrip);
+		const double theta = 10 * RAD;
+		double angle = 0;
+		sf::Vector2f p;
+
+		if (shapes.size() == 3)
+		{
+			SPC_Circle* c1 = reinterpret_cast<SPC_Circle*>(shapes[0]);
+			SPC_Circle* c2 = reinterpret_cast<SPC_Circle*>(shapes[2]);
+
+			if (c1->position.x == c2->position.x)
+			{
+				angle = -PI;
+				do
+				{
+					p.x = c1->position.x + c1->radius * cos(angle);
+					p.y = c1->position.y + c1->radius * sin(angle);
+					arr.append(p);
+					angle += theta;
+				} while (angle <= 0);
+
+				angle = 0;
+				do
+				{
+					p.x = c2->position.x + c2->radius * cos(angle);
+					p.y = c2->position.y + c2->radius * sin(angle);
+					arr.append(p);
+					angle += theta;
+				} while (angle <= PI);
+
+				arr.append(sf::Vector2f(c1->position.x - c1->radius, c1->position.y));
+			}
+			else
+			{
+				angle = -PI * 3 / 2;
+				do
+				{
+					p.x = c1->position.x + c1->radius * cos(angle);
+					p.y = c1->position.y + c1->radius * sin(angle);
+					arr.append(p);
+					angle += theta;
+				} while (angle <= -PI / 2);
+
+				angle = -PI / 2;
+				do
+				{
+					p.x = c2->position.x + c2->radius * cos(angle);
+					p.y = c2->position.y + c2->radius * sin(angle);
+					arr.append(p);
+					angle += theta;
+				} while (angle <= PI / 2);
+
+				arr.append(sf::Vector2f(c1->position.x, c1->position.y + c1->radius));
+			}
 		}
 		else
 		{
-			angle = -PI * 3 / 2;
+			SPC_Circle* c1 = reinterpret_cast<SPC_Circle*>(shapes[0]);
+			SPC_Circle* c2 = reinterpret_cast<SPC_Circle*>(shapes[1]);
+			SPC_Circle* c3 = reinterpret_cast<SPC_Circle*>(shapes[4]);
+			SPC_Circle* c4 = reinterpret_cast<SPC_Circle*>(shapes[5]);
+
+			angle = -PI;
 			do
 			{
 				p.x = c1->position.x + c1->radius * cos(angle);
@@ -272,71 +342,44 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 				p.y = c2->position.y + c2->radius * sin(angle);
 				arr.append(p);
 				angle += theta;
+			} while (angle <= 0);
+
+			angle = 0;
+			do
+			{
+				p.x = c3->position.x + c3->radius * cos(angle);
+				p.y = c3->position.y + c3->radius * sin(angle);
+				arr.append(p);
+				angle += theta;
 			} while (angle <= PI / 2);
 
-			arr.append(sf::Vector2f(c1->position.x, c1->position.y + c1->radius));
+			angle = PI / 2;
+			do
+			{
+				p.x = c4->position.x + c4->radius * cos(angle);
+				p.y = c4->position.y + c4->radius * sin(angle);
+				arr.append(p);
+				angle += theta;
+			} while (angle <= PI);
+
+			arr.append(sf::Vector2f(c1->position.x - c1->radius, c1->position.y));
 		}
+
+		int s = arr.getVertexCount();
+		for (int i = 0; i < s; i++)
+			arr[i].color = color;
+
+		target.draw(arr);
 	}
-	else
-	{
-		SPC_Circle* c1 = reinterpret_cast<SPC_Circle*>(shapes[0]);
-		SPC_Circle* c2 = reinterpret_cast<SPC_Circle*>(shapes[1]);
-		SPC_Circle* c3 = reinterpret_cast<SPC_Circle*>(shapes[4]);
-		SPC_Circle* c4 = reinterpret_cast<SPC_Circle*>(shapes[5]);
-
-		angle = -PI;
-		do
-		{
-			p.x = c1->position.x + c1->radius * cos(angle);
-			p.y = c1->position.y + c1->radius * sin(angle);
-			arr.append(p);
-			angle += theta;
-		} while (angle <= -PI / 2);
-
-		angle = -PI / 2;
-		do
-		{
-			p.x = c2->position.x + c2->radius * cos(angle);
-			p.y = c2->position.y + c2->radius * sin(angle);
-			arr.append(p);
-			angle += theta;
-		} while (angle <= 0);
-
-		angle = 0;
-		do
-		{
-			p.x = c3->position.x + c3->radius * cos(angle);
-			p.y = c3->position.y + c3->radius * sin(angle);
-			arr.append(p);
-			angle += theta;
-		} while (angle <= PI / 2);
-
-		angle = PI / 2;
-		do
-		{
-			p.x = c4->position.x + c4->radius * cos(angle);
-			p.y = c4->position.y + c4->radius * sin(angle);
-			arr.append(p);
-			angle += theta;
-		} while (angle <= PI);
-
-		arr.append(sf::Vector2f(c1->position.x - c1->radius, c1->position.y));
-	}
-
-	int s = arr.getVertexCount();
-	for (int i = 0; i < s; i++)
-		arr[i].color = color;
-	
-	target.draw(arr);
 }
 
 void drawTriangles(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Color color)
 {
 	sf::Color cc[3] = { sf::Color::Red, sf::Color::Green, sf::Color::Blue };
 	
-	static const int mode = 2;
+	static const int triangle_mode = 2;
 
-	if (mode == 1)
+	if (triangle_mode == 1)
 	{
 		//method 1: draw each triangles
 		for (auto& shape : shapes)
@@ -394,6 +437,21 @@ void drawTriangles(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 
 		target.draw(arr);
 	}
+}
+
+void drawVertices(sf::RenderTarget& target, vector<Vec2>& shapes, sf::Color color)
+{
+	sf::VertexArray arr(sf::LinesStrip);
+	for (auto& v : shapes)
+		arr.append(sf::Vector2f(v.x, v.y));
+
+	arr.append(sf::Vector2f(shapes[0].x, shapes[0].y));
+
+	int s = arr.getVertexCount();
+	for (int i = 0; i < s; i++)
+		arr[i].color = color;
+
+	target.draw(arr);
 }
 
 int main()
@@ -530,24 +588,36 @@ int main()
 		for (int i = 0; i < shapes.size(); i++) //reset
 			shapes[i].collided = false;
 
+		window.clear();
+
 		for (int i = 0; i < shapes.size(); i++) //collide test
 			for (int j = i + 1; j < shapes.size(); j++)
 			{
 				bool check = false;
-				for (int ii = 0; ii < shapes[i].shapes.size(); ii++)
+				for (int ii = 0; ii < shapes[i].shapes.size() && !check; ii++)
 				{
 					m.A = shapes[i].shapes[ii];
 
-					for (int jj = 0; jj < shapes[j].shapes.size(); jj++)
+					for (int jj = 0; jj < shapes[j].shapes.size() && !check; jj++)
 					{
 						m.B = shapes[j].shapes[jj];
-						if (Collision::Collide[m.A->type][m.B->type](&m))
+						if (Collision::Collide(&m))
+						{
 							shapes[i].collided = shapes[j].collided = true;
+							check = true;
+
+							sf::VertexArray arr(sf::Lines);
+							sf::Vector2f contact = sf::Vector2f(m.contact_points[0].x, m.contact_points[0].y);
+							arr.append(contact);
+							arr.append(contact + sf::Vector2f(m.normal.x * m.penetration, m.normal.y * m.penetration));
+							arr[0].color = sf::Color::Green;
+							arr[1].color = sf::Color::Blue;
+
+							window.draw(arr);
+						}
 					}
 				}
 			}
-
-		window.clear();
 
 		for (auto& test : shapes) //draw shapes
 		{
@@ -618,6 +688,7 @@ int main()
 		window.display();
 
 		for (auto& shape : shapes) //move shapes
+		{
 			for (auto& s : shape.shapes)
 			{
 				switch (s->type)
@@ -645,6 +716,7 @@ int main()
 					break;
 				}
 			}
+		}
 	}
 
 	for (auto& shape : shapes) //destroy

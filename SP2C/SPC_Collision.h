@@ -82,7 +82,7 @@ namespace SP2C
 			return true;
 		}
 
-		bool AABB_to_AABB(struct SPC_Manifold* m)
+		bool AABB_to_AABB(SPC_Manifold* m)
 		{
 			SPC_AABB* a = reinterpret_cast<SPC_AABB*>(m->A);
 			SPC_AABB* b = reinterpret_cast<SPC_AABB*>(m->B);
@@ -112,7 +112,7 @@ namespace SP2C
 				m->penetration = x_overlap;
 
 				m->contact_count = 2;
-				m->contact_points[0] = Vec2(x_overlap * m->normal.x + (n.x < 0 ? a->min.x : a->max.x), std::max(a->min.y, b->min.y));
+				m->contact_points[0] = Vec2((n.x < 0 ? a->min.x : a->max.x), std::max(a->min.y, b->min.y));
 				m->contact_points[1] = Vec2(m->contact_points[0].x, std::min(a->max.y, b->max.y));
 			}
 			else
@@ -125,7 +125,7 @@ namespace SP2C
 				m->penetration = y_overlap;
 
 				m->contact_count = 2;
-				m->contact_points[0] = Vec2(std::max(a->min.x, b->min.x), y_overlap * m->normal.y + (n.y < 0 ? a->min.y : a->max.y));
+				m->contact_points[0] = Vec2(std::max(a->min.x, b->min.x), (n.y < 0 ? a->min.y : a->max.y));
 				m->contact_points[1] = Vec2(std::min(a->max.x, b->max.x), m->contact_points[0].y);
 			}
 
@@ -170,7 +170,7 @@ namespace SP2C
 				inside = true;
 
 				//find closest axis
-				if (std::abs(n.x) < std::abs(n.y)) //x axis
+				if (std::abs(n.x) > std::abs(n.y)) //x axis
 					closest.x = closest.x > 0 ? x_extent : -x_extent;
 				else
 					closest.y = closest.y > 0 ? y_extent : -y_extent;
@@ -183,11 +183,12 @@ namespace SP2C
 			if (d > r * r && !inside) return false;
 
 			d = std::sqrt(d);
+			normal.Normalize();
 
 			m->contact_count = 1;
-			m->contact_points[0] = closest;
-			m->normal = inside ? -n : n;
+			m->normal = inside ? -normal : normal;
 			m->penetration = r - d;
+			m->contact_points[0] = a->GetCenter() + closest;
 
 			return true;
 		}
@@ -670,12 +671,17 @@ namespace SP2C
 
 		typedef bool (*SPC_CollideCallback) (SPC_Manifold* manifold);
 
-		SPC_CollideCallback Collide[ShapeType::Count][ShapeType::Count] =
+		SPC_CollideCallback CollideFunc[ShapeType::Count][ShapeType::Count] =
 		{
 			{ AABB_to_AABB, AABB_to_Circle, AABB_to_Polygon },
 			{ Circle_to_AABB, Circle_to_Circle, Circle_to_Polygon },
 			{ Polygon_to_AABB, Polygon_to_Circle, Polygon_to_Polygon }
 		};
+
+		bool Collide(SPC_Manifold* m)
+		{
+			return CollideFunc[m->A->type][m->B->type](m);
+		}
 	}
 }
 #endif

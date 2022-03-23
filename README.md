@@ -3,6 +3,14 @@ SP2C (Simple Physics 2D Collisions) is a simple 2d collision detection library w
 
 
 
+![main_image](https://user-images.githubusercontent.com/26345945/159725133-2c1e9574-4a68-4fdf-befa-155dde2f9a22.png)
+
+
+
+### Contents
+
+------
+
 There are two versions in this repository.
 
 * SP2 (in main)
@@ -61,4 +69,113 @@ There are two versions in this repository.
     Or you can build `main.cpp` undefining the option.
 
   - Please let me know if there is a problem or something to fix, via gmail.
+
+
+
+### Example
+
+------
+
+```c++
+#include "SPC_Shapes.h"
+#include "SPC_Collision.h"
+
+SP2C::SPC_AABB box1;
+box1.min = SP2C::Vec2(100, 150);
+box1.max = SP2C::Vec2(200, 300);
+
+SP2C::SPC_Circle circle1;
+circle1.radius = 30;
+circle1.position = SP2C::Vec2(215, 320);
+
+bool collided1 = SP2C::Collision::AABB_to_Circle(box1, circle1);
+
+SP2C::SPC_AABB box2;
+box2.min = SP2C::Vec2(400, 150);
+box2.max = SP2C::Vec2(450, 300);
+
+SP2C::SPC_AABB box3;
+box3.min = SP2C::Vec2(470, 180);
+box3.max = SP2C::Vec2(520, 220);
+
+bool collided2 = SP2C::Collision::AABB_to_AABB(box2, box3);
+```
+
+The result would be like:
+
+![image_1](https://user-images.githubusercontent.com/26345945/159725306-675ef833-3c34-4cc4-b01b-310ffb4c656b.png)
+
+
+
+Also, you can use manifold to do same thing.
+
+```c++
+SP2C::SPC_AABB box1;
+box1.min = SP2C::Vec2(100, 150);
+box1.max = SP2C::Vec2(200, 300);
+
+SP2C::SPC_Circle circle1;
+circle1.radius = 30;
+circle1.position = SP2C::Vec2(215, 320);
+
+SP2C::SPC_Manifold m;
+m.A = &box1;
+m.B = &circle1;
+
+bool collided = SP2C::Collision::AABB_to_Circle(&m);
+```
+
+The function `SP2C::Collision::Collide` will detect manifold's shape types.
+
+```c++
+bool collided = SP2C::Collision::Collide(&m);
+```
+
+
+
+You can get contact info (contact points, contact counts, normal and penetration) from manifold.
+
+```
+if (SP2C::Collision::Collide(&m))
+{
+	SP2C::Vec2 p1 = m.contact_points[0].x, m.contact_points[0].y);
+	SP2C::Vec2 p2 = p1 + m.normal * m.penetration;
+}
+```
+
+![image_2](https://user-images.githubusercontent.com/26345945/159725399-bb04cb00-1287-4724-a2a4-dfcd6b702ccd.png)
+
+
+
+A vector `m.normal * m.penetraion` indicates the line (from green to blue) from the shape A.
+
+You can use it like the code below.
+
+```c++
+Vec2 f = -m.normal * m.penetration; //invert direction for restitution
+
+switch (m.A->type)
+{
+	case SP2C::ShapeType::AABB:
+		reinterpret_cast<SPC_AABB*>(m.A)->Translate(f.x, f.y);
+        break;
+
+    case ShapeType::Circle:
+	    reinterpret_cast<SPC_Circle*>(m.A)->position += f;
+    	break;
+
+	case ShapeType::Polygon:
+		reinterpret_cast<SPC_Polygon*>(m.A)->Translate(f.x, f.y);
+		break;
+		
+	default:
+		break;
+}
+```
+
+The result would be like:
+
+![image_3](https://user-images.githubusercontent.com/26345945/159725513-9bc72251-dcec-4919-b6fa-443b3edcb41b.gif)
+
+
 
