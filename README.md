@@ -9,7 +9,6 @@ SP2C (Simple Physics 2D Collisions) is a simple 2d collision detection library w
 
 ### Contents
 
-------
 
 There are two versions in this repository.
 
@@ -74,7 +73,6 @@ There are two versions in this repository.
 
 ### Example
 
-------
 
 ```c++
 #include "SPC_Shapes.h"
@@ -135,7 +133,7 @@ bool collided = SP2C::Collision::Collide(&m);
 
 You can get contact info (contact points, contact counts, normal and penetration) from manifold.
 
-```
+```c++
 if (SP2C::Collision::Collide(&m))
 {
 	SP2C::Vec2 p1 = m.contact_points[0].x, m.contact_points[0].y);
