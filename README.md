@@ -38,7 +38,7 @@ There are two versions in this repository.
 
   - I also implemented some custom shapes in `main_SP2C.cpp`, like RoundRect and Concaves.
 
-    - RoundRect is a group of circles and aabbs. See functions `createRoundRect` and `drawRoundRect`.
+    - RoundRect is a group of circles and aabbs. See function `createRoundRect` and `drawRoundRect`.
 
       You can set draw mode to draw each circles and boxes, or outline of roundrect.
 
@@ -148,7 +148,7 @@ You can get contact info (contact points, contact counts, normal and penetration
 ```c++
 if (SP2C::Collision::Collide(&m))
 {
-	SP2C::Vec2 p1 = m.contact_points[0].x, m.contact_points[0].y);
+	SP2C::Vec2 p1 = m.contact_points[0];
 	SP2C::Vec2 p2 = p1 + m.normal * m.penetration;
 }
 ```
@@ -162,20 +162,20 @@ A vector `m.normal * m.penetraion` indicates the line (from green to blue) from 
 You can use it like the code below.
 
 ```c++
-Vec2 f = -m.normal * m.penetration; //invert direction for restitution
+SP2C::Vec2 f = -m.normal * m.penetration; //invert direction for restitution
 
 switch (m.A->type)
 {
 	case SP2C::ShapeType::AABB:
-		reinterpret_cast<SPC_AABB*>(m.A)->Translate(f.x, f.y);
+		reinterpret_cast<SP2C::SPC_AABB*>(m.A)->Translate(f.x, f.y);
         break;
 
-    case ShapeType::Circle:
-	    reinterpret_cast<SPC_Circle*>(m.A)->position += f;
+    case SP2C::ShapeType::Circle:
+	    reinterpret_cast<SP2C::SPC_Circle*>(m.A)->position += f;
     	break;
 
-	case ShapeType::Polygon:
-		reinterpret_cast<SPC_Polygon*>(m.A)->Translate(f.x, f.y);
+    case SP2C::ShapeType::Polygon:
+		reinterpret_cast<SP2C::SPC_Polygon*>(m.A)->Translate(f.x, f.y);
 		break;
 		
 	default:
