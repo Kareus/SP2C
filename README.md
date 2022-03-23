@@ -7,7 +7,7 @@ There are two versions in this repository.
 
 * SP2 (in main)
 
-  - implements physics engine following Randygaul's [tutorials](https://tutsplus.com/authors/randy-gaul) on tutsplus and [ImpluseEngine](https://github.com/RandyGaul/ImpulseEngine) github.
+  - implements physics engine following Randygaul's [tutorials](https://tutsplus.com/authors/randy-gaul) on tutsplus and [ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) github.
 
   - implements Circle and Polygon (Convex).
 
