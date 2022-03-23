@@ -28,17 +28,17 @@ There are two versions in this repository.
 
   - implements AABB, Circle, Polygon (Convex).
 
-    - Polygon automatically find the hull points in counter-clockwise order.
+    - Polygon automatically finds the hull points in counter-clockwise order.
 
       You can turn off with setting bool parameter `ordering` as false and put the vertices directly.
 
-      See `Set` function in struct `SP2C::SPC_Polygon` in `SPC_Shapes.h`.
+      See function `Set` in struct `SP2C::SPC_Polygon` in `SPC_Shapes.h`.
 
       Also you can create a box polygon with function `SetBox`. Use it when you need rotating boxes.
 
   - I also implemented some custom shapes in `main_SP2C.cpp`, like RoundRect and Concaves.
 
-    - RoundRect is a group of circles and aabbs. See function `createRoundRect` and `drawRoundRect`.
+    - RoundRect is a group of circles and aabbs.
 
       You can set draw mode to draw each circles and boxes, or outline of roundrect.
 
