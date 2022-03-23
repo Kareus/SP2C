@@ -50,7 +50,7 @@ There are two versions in this repository.
 
       You can set draw mode to draw each triangles, or outline of concave.
   
-      See functions `triangulation` and `drawTriangles`.
+      See function `triangulation` and `drawTriangles`.
   
   - Only a single polygon can rotate.
   

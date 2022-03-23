@@ -78,7 +78,7 @@ namespace SP2C
 
 	Vec2 RotateVec(Vec2 origin, Vec2 pivot, double deg)
 	{
-		double rad = deg * PI / 180;
+		double rad = deg * RAD;
 		double sin = std::sin(rad), cos = std::cos(rad);
 
 		SPC_Mat33 T_inv(1, 0, -pivot.x, 0, 1, -pivot.y, 0, 0, 1);

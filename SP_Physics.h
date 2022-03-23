@@ -11,12 +11,6 @@
 #include "SP_Math.h"
 #include "SP_Mat22.h"
 
-/*
-references
-https://gamedevelopment.tutsplus.com/tutorials/how-to-create-a-custom-2d-physics-engine-the-basics-and-impulse-resolution--gamedev-6331
-https://www.reddit.com/r/gamedev/comments/1gl2vi/how_to_create_a_custom_2d_physics_engine_fourpart/
-*/
-
 namespace SP2
 {
 	bool Intersect_Circle_to_Circle(SP_Manifold* manifold)
@@ -43,7 +37,7 @@ namespace SP2
 			manifold->normal = n / d;
 			manifold->contacts[0] = manifold->normal * a->radius + manifold->A->position;
 		}
-		else //on the same position
+		else
 		{
 			manifold->penetration = a->radius;
 			manifold->normal = { 1,0 };
