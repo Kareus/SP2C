@@ -10,8 +10,6 @@
 using namespace std;
 using namespace SP2;
 
-//https://github.com/RandyGaul/ImpulseEngine
-
 pair<SP_Body*, SP_Shape*> createCircle(double r)
 {
 	SP_Body* body = new SP_Body;
