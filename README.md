@@ -148,8 +148,8 @@ You can get contact info (contact points, contact counts, normal and penetration
 ```c++
 if (SP2C::Collision::Collide(&m))
 {
-	SP2C::Vec2 p1 = m.contact_points[0];
-	SP2C::Vec2 p2 = p1 + m.normal * m.penetration;
+    SP2C::Vec2 p1 = m.contact_points[0];
+    SP2C::Vec2 p2 = p1 + m.normal * m.penetration;
 }
 ```
 
@@ -166,20 +166,20 @@ SP2C::Vec2 f = -m.normal * m.penetration; //invert direction for restitution
 
 switch (m.A->type)
 {
-	case SP2C::ShapeType::AABB:
-		reinterpret_cast<SP2C::SPC_AABB*>(m.A)->Translate(f.x, f.y);
+    case SP2C::ShapeType::AABB:
+        reinterpret_cast<SP2C::SPC_AABB*>(m.A)->Translate(f.x, f.y);
         break;
-
+    
     case SP2C::ShapeType::Circle:
-	    reinterpret_cast<SP2C::SPC_Circle*>(m.A)->position += f;
-    	break;
-
+        reinterpret_cast<SP2C::SPC_Circle*>(m.A)->position += f;
+        break;
+    
     case SP2C::ShapeType::Polygon:
-		reinterpret_cast<SP2C::SPC_Polygon*>(m.A)->Translate(f.x, f.y);
-		break;
-		
-	default:
-		break;
+        reinterpret_cast<SP2C::SPC_Polygon*>(m.A)->Translate(f.x, f.y);
+        break;
+        
+    default:
+        break;
 }
 ```
 
