@@ -28,26 +28,38 @@ There are two versions in this repository.
 
   - implements AABB, Circle, Polygon (Convex).
 
+    - Polygon automatically find the hull points in counter-clockwise order.
+
+      You can turn off with setting bool parameter `ordering` as false and put the vertices directly.
+
+      See `Set` function in struct `SP2C::SPC_Polygon` in `SPC_Shapes.h`.
+
+      Also you can create a box polygon with function `SetBox`. Use it when you need rotating boxes.
+
   - I also implemented some custom shapes in `main_SP2C.cpp`, like RoundRect and Concaves.
 
     - RoundRect is a group of circles and aabbs. See functions `createRoundRect` and `drawRoundRect`.
 
-    - Concave is converted into a group of triangles using Ear Clipping triangulation algorithm.
+      You can set draw mode to draw each circles and boxes, or outline of roundrect.
 
+      See function `createRoundRect` and `drawRoundRect`.
+
+    - Concave is converted into a group of triangles using Ear Clipping triangulation algorithm.
+  
       Due to the generation code in main function, it can be actually a convex in random cases.
 
       You can set draw mode to draw each triangles, or outline of concave.
-
-      See functions `triangulation` and `drawTriangles`
-
+  
+      See functions `triangulation` and `drawTriangles`.
+  
   - Only a single polygon can rotate.
-
+  
     - You can test rotating polygons with the option,
-
+  
       ```c++
       #define ROTATE_POLYGON_TEST 1 //line 15 in main_SP2C.cpp
       ```
-
+  
     - AABB (as it is axis-aligned) and Circles, for sure, don't rotate.
     - I didn't implement polygon rotation in the concave (group of triangles).
 
