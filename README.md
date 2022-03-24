@@ -12,7 +12,7 @@ SP2C (Simple Physics 2D Collisions) is a simple 2d collision detection library w
 
 There are two versions in this repository.
 
-* SP2 (in main)
+* SP2 (in `include/SP` directory)
 
   - implements physics engine following Randygaul's [tutorials](https://tutsplus.com/authors/randy-gaul) on tutsplus and [ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) github.
 
@@ -20,7 +20,7 @@ There are two versions in this repository.
 
     
 
-* SP2C (in SP2C directory)
+* SP2C (in `include/SP2C` directory)
 
   - implements only collision detections. (whether two shapes are colliding and a manifold)
 
@@ -36,7 +36,7 @@ There are two versions in this repository.
 
       Also you can create a box polygon with function `SetBox`. Use it when you need rotating boxes.
 
-  - I also implemented some custom shapes in `main_SP2C.cpp`, like RoundRect and Concaves.
+  - I also implemented some custom shapes in `test/main_SP2C.cpp`, like RoundRect and Concaves.
 
     - RoundRect is a group of circles and aabbs.
 
@@ -57,7 +57,7 @@ There are two versions in this repository.
     - You can test rotating polygons with the option,
   
       ```c++
-      #define ROTATE_POLYGON_TEST 1 //line 15 in main_SP2C.cpp
+      #define ROTATE_POLYGON_TEST 1 //line 15 in test/main_SP2C.cpp
       ```
   
     - AABB (as it is axis-aligned) and Circles, for sure, don't rotate.
@@ -71,13 +71,13 @@ There are two versions in this repository.
 
   - environment : C++17, Visual Studio 2019, SFML 2.5.1
 
-  - You can build `main_SP2C.cpp`  with defining in `test_def.h`,
+  - You can build `test/main_SP2C.cpp`  with defining in `test/test_def.h`,
 
     ```c++
     #define __MAIN_SP2C__
     ```
 
-    Or you can build `main.cpp` undefining the option.
+    Or you can build `test/main.cpp` undefining the option.
 
   - Please let me know if there is a problem or something to fix, via gmail.
 
@@ -87,8 +87,8 @@ There are two versions in this repository.
 
 
 ```c++
-#include "SPC_Shapes.h"
-#include "SPC_Collision.h"
+#include "SP2C/SPC_Shapes.h"
+#include "SP2C/SPC_Collision.h"
 
 SP2C::SPC_AABB box1;
 box1.min = SP2C::Vec2(100, 150);

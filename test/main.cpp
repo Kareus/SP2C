@@ -1,11 +1,11 @@
 #include "test_def.h"
 
-#ifndef __MAIN_SP2C__
+#if __MAIN_SPC__
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#include "SP_Shapes.h"
-#include "SP_Engine.h"
+#include "SP/SP_Shapes.h"
+#include "SP/SP_Engine.h"
 
 using namespace std;
 using namespace SP2;

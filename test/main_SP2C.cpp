@@ -1,13 +1,13 @@
-#include "../test_def.h"
+#include "test_def.h"
 
-#ifdef __MAIN_SP2C__
+#if __MAIN_SP2C__
 
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-#include "SPC_Shapes.h"
-#include "SPC_Collision.h"
+#include "SP2C/SPC_Shapes.h"
+#include "SP2C/SPC_Collision.h"
 
 using namespace std;
 using namespace SP2C;
@@ -262,7 +262,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 			}
 		}
 	}
-	else //method 2 : draw outline (circles in clockwise order, from createRoundRect)
+	else //method 2 : draw outline
 	{
 		sf::VertexArray arr(sf::LinesStrip);
 		const double theta = 10 * RAD;
@@ -386,7 +386,7 @@ void drawTriangles(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 		{
 			SPC_Polygon* p = reinterpret_cast<SPC_Polygon*>(shape);
 
-			sf::VertexArray arr(sf::LinesStrip); //sf::ConvexShape would work well now?
+			sf::VertexArray arr(sf::LinesStrip); //convex would result in some errors due to some points not in correct order
 			for (int i = 0; i < 3; i++)
 			{
 				arr.append(sf::Vector2f(p->vertices[i].x, p->vertices[i].y));
@@ -439,7 +439,6 @@ void drawTriangles(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 	}
 }
 
-//unused, but you can test something with this
 void drawVertices(sf::RenderTarget& target, vector<Vec2>& shapes, sf::Color color)
 {
 	sf::VertexArray arr(sf::LinesStrip);
@@ -458,7 +457,6 @@ void drawVertices(sf::RenderTarget& target, vector<Vec2>& shapes, sf::Color colo
 int main()
 {
 	vector<ShapeTester> shapes;
-	vector<vector<Vec2>> dots;
 
 	ShapeTester tester;
 
@@ -607,14 +605,12 @@ int main()
 							shapes[i].collided = shapes[j].collided = true;
 							check = true;
 
-							// manifold vector
 							sf::VertexArray arr(sf::Lines);
 							sf::Vector2f contact = sf::Vector2f(m.contact_points[0].x, m.contact_points[0].y);
 							arr.append(contact);
 							arr.append(contact + sf::Vector2f(m.normal.x * m.penetration, m.normal.y * m.penetration));
 							arr[0].color = sf::Color::Green;
 							arr[1].color = sf::Color::Blue;
-							//
 
 							window.draw(arr);
 						}

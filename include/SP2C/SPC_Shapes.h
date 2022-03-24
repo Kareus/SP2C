@@ -59,6 +59,12 @@ namespace SP2C
 			max.x += x, max.y += y;
 		}
 
+		void Translate(Vec2 p)
+		{
+			min += p;
+			max += p;
+		}
+
 		void Scale(double k)
 		{
 			Vec2 pivot = GetCenter();
@@ -90,6 +96,22 @@ namespace SP2C
 		SPC_AABB ComputeAABB() const
 		{
 			return SPC_AABB(Vec2(-radius, -radius), Vec2(radius, radius));
+		}
+
+		void Translate(double x, double y)
+		{
+			position.x += x;
+			position.y += y;
+		}
+
+		void Translate(Vec2 p)
+		{
+			position += p;
+		}
+
+		void Sccale(double k)
+		{
+			radius *= k;
 		}
 	};
 
@@ -215,6 +237,12 @@ namespace SP2C
 				vertices[i].x += x, vertices[i].y += y;
 		}
 
+		void Translate(Vec2 p)
+		{
+			for (unsigned int i = 0; i < vertexCount; i++)
+				vertices[i] += p;
+		}
+
 		void Scale(double k)
 		{
 			Vec2 pivot = GetCenter();
@@ -237,7 +265,7 @@ namespace SP2C
 			double x1 = DBL_MAX, x2 = -DBL_MAX;
 			double y1 = DBL_MAX, y2 = -DBL_MAX;
 
-			for (int i = 0; i < vertexCount; i++)
+			for (unsigned int i = 0; i < vertexCount; i++)
 			{
 				x1 = std::min(x1, vertices[i].x);
 				x2 = std::max(x2, vertices[i].x);
