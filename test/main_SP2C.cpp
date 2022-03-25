@@ -534,7 +534,6 @@ int main()
 				angle += theta;
 			}
 			
-			dots.push_back(v);
 			auto triangles = triangulation(v);
 
 			tester.shapes = { triangles };
