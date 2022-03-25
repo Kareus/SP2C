@@ -151,7 +151,6 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 	{
 		if (maxLoop-- <= 0) break;
 
-		N = idx.size();
 		int i = j % N;
 		j = (i + 1) % N;
 		int k = (j + 1) % N;
