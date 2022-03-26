@@ -16,6 +16,12 @@ namespace SP2C
 	struct SPC_Shape
 	{
 		ShapeType type;
+
+		virtual SPC_Shape* Clone() const = 0;
+		virtual void Translate(double x, double y) {}
+		virtual void Translate(Vec2 p) {}
+		virtual void Scale(double k) {}
+		virtual void Rotate(double deg) {}
 	};
 
 	Vec2 AABB_normals[4] = { Vec2(0, -1), Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0) };
@@ -28,11 +34,18 @@ namespace SP2C
 		SPC_AABB()
 		{
 			type = ShapeType::AABB;
+			min = max = Vec2(0, 0);
 		}
 
 		SPC_AABB(Vec2 min, Vec2 max) : min(min), max(max)
 		{
 			type = ShapeType::AABB;
+		}
+
+		SPC_Shape* Clone() const override
+		{
+			SPC_AABB* aabb = new SPC_AABB(min, max);
+			return aabb;
 		}
 
 		Vec2 GetCenter() const
@@ -53,19 +66,19 @@ namespace SP2C
 			vertices[3] = Vec2(min.x, max.y);
 		}
 
-		void Translate(double x, double y)
+		void Translate(double x, double y) override
 		{
 			min.x += x, min.y += y;
 			max.x += x, max.y += y;
 		}
 
-		void Translate(Vec2 p)
+		void Translate(Vec2 p) override
 		{
 			min += p;
 			max += p;
 		}
 
-		void Scale(double k)
+		void Scale(double k) override
 		{
 			Vec2 pivot = GetCenter();
 			min = ScaleVec(min, pivot, k);
@@ -86,11 +99,19 @@ namespace SP2C
 		SPC_Circle()
 		{
 			type = ShapeType::Circle;
+			radius = 0;
+			position = Vec2(0, 0);
 		}
 
-		SPC_Circle(double r) : radius(r)
+		SPC_Circle(double r = 0, Vec2 p = Vec2(0, 0)) : radius(r), position(p)
 		{
 			type = ShapeType::Circle;
+		}
+
+		SPC_Shape* Clone() const override
+		{
+			SPC_Circle* circle = new SPC_Circle(radius, position);
+			return circle;
 		}
 
 		SPC_AABB ComputeAABB() const
@@ -98,18 +119,18 @@ namespace SP2C
 			return SPC_AABB(Vec2(-radius, -radius), Vec2(radius, radius));
 		}
 
-		void Translate(double x, double y)
+		void Translate(double x, double y) override
 		{
 			position.x += x;
 			position.y += y;
 		}
 
-		void Translate(Vec2 p)
+		void Translate(Vec2 p) override
 		{
 			position += p;
 		}
 
-		void Sccale(double k)
+		void Scale(double k) override
 		{
 			radius *= k;
 		}
@@ -125,6 +146,21 @@ namespace SP2C
 		SPC_Polygon()
 		{
 			type = ShapeType::Polygon;
+			vertexCount = 0;
+		}
+
+		SPC_Shape* Clone() const override
+		{
+			SPC_Polygon* polygon = new SPC_Polygon;
+			polygon->vertexCount = vertexCount;
+
+			for (unsigned int i = 0; i < vertexCount; i++)
+			{
+				polygon->vertices[i] = vertices[i];
+				polygon->normals[i] = normals[i];
+			}
+
+			return polygon;
 		}
 
 		Vec2 GetCenter()
@@ -169,7 +205,7 @@ namespace SP2C
 					hull[outCount] = indexHull;
 
 					int nextHullIndex = 0;
-					for (int i = 1; i < count; i++)
+					for (unsigned int i = 1; i < count; i++)
 					{
 						if (nextHullIndex == indexHull)
 						{
@@ -196,17 +232,17 @@ namespace SP2C
 					}
 				}
 
-				for (int i = 0; i < vertexCount; i++)
+				for (unsigned int i = 0; i < vertexCount; i++)
 					vertices[i] = v[hull[i]];
 			}
 			else //just put vertices in original order
 			{
 				vertexCount = count;
-				for (int i = 0; i < vertexCount; i++)
+				for (unsigned int i = 0; i < vertexCount; i++)
 					vertices[i] = v[i];
 			}
 
-			for (int i = 0; i < vertexCount; i++)
+			for (unsigned int i = 0; i < vertexCount; i++)
 			{
 				unsigned int i2 = i + 1 < vertexCount ? i + 1 : 0;
 				Vec2 face = vertices[i2] - vertices[i];
@@ -231,26 +267,26 @@ namespace SP2C
 			normals[3] = { -1, 0 };
 		}
 
-		void Translate(double x, double y)
+		void Translate(double x, double y) override
 		{
 			for (unsigned int i = 0; i < vertexCount; i++)
 				vertices[i].x += x, vertices[i].y += y;
 		}
 
-		void Translate(Vec2 p)
+		void Translate(Vec2 p) override
 		{
 			for (unsigned int i = 0; i < vertexCount; i++)
 				vertices[i] += p;
 		}
 
-		void Scale(double k)
+		void Scale(double k) override
 		{
 			Vec2 pivot = GetCenter();
 			for (unsigned int i = 0; i < vertexCount; i++)
 				vertices[i] = ScaleVec(vertices[i], pivot, k);
 		}
 
-		void Rotate(double deg)
+		void Rotate(double deg) override
 		{
 			Vec2 pivot = GetCenter();
 			for (unsigned int i = 0; i < vertexCount; i++)
