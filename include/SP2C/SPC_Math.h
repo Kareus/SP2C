@@ -4,14 +4,12 @@
 
 #include <cmath>
 #include <algorithm>
+#include "SPC_Constants.h"
 #include "SPC_Vector.h"
 #include "SPC_Mat33.h"
 
 namespace SP2C
 {
-	const double PI = 3.141592653589793;
-	const double RAD = PI / 180;
-
 	double DistanceSquared(Vec2 a, Vec2 b)
 	{
 		double x = a.x - b.x, y = a.y - b.y;
@@ -78,7 +76,7 @@ namespace SP2C
 
 	Vec2 RotateVec(Vec2 origin, Vec2 pivot, double deg)
 	{
-		double rad = deg * RAD;
+		double rad = deg * Const::RAD;
 		double sin = std::sin(rad), cos = std::cos(rad);
 
 		SPC_Mat33 T_inv(1, 0, -pivot.x, 0, 1, -pivot.y, 0, 0, 1);

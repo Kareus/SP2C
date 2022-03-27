@@ -86,7 +86,7 @@ int main()
 			SP_Shape* shape = body->shape;
 			switch (shape->type)
 			{
-			case ShapeType::Circle:
+			case SP_Shape::Circle:
 			{
 				SP_Circle* c = reinterpret_cast<SP_Circle*>(shape);
 				sf::CircleShape circle;
@@ -100,7 +100,7 @@ int main()
 			}
 				break;
 
-			case ShapeType::Polygon:
+			case SP_Shape::Polygon:
 			{
 				SP_Polygon* p = reinterpret_cast<SP_Polygon*>(shape);
 				sf::RectangleShape rect;

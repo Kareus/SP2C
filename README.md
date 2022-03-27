@@ -45,23 +45,28 @@ There are two versions in this repository.
       See function `createRoundRect` and `drawRoundRect`.
 
     - Concave is converted into a group of triangles using Ear Clipping triangulation algorithm.
-  
+
       Due to the generation code in main function, it can be actually a convex in random cases.
 
       You can set draw mode to draw each triangles, or outline of concave.
-  
+
       See function `triangulation` and `drawTriangles`.
-  
+
   - Only a single polygon can rotate.
-  
+
     - You can test rotating polygons with the option,
-  
+
       ```c++
       #define ROTATE_POLYGON_TEST 1 //line 15 in test/main_SP2C.cpp
       ```
-  
+
     - AABB (as it is axis-aligned) and Circles, for sure, don't rotate.
+    
     - I didn't implement polygon rotation in the concave (group of triangles).
+    
+  - function `Transform` in shapes works slightly different in each shapes
+
+    See `SPC_Shapes.h` or examples below.
 
 
 
@@ -188,4 +193,105 @@ The result would be like:
 ![image_3](https://user-images.githubusercontent.com/26345945/159725513-9bc72251-dcec-4919-b6fa-443b3edcb41b.gif)
 
 
+
+You can use function `Translate`, `Scale`, `Rotate` (rotate only in polygon) in each shapes.
+
+Also you can use `Transform` to translae, scale and rotate the shape.
+
+If xscale and yscale are different (`m[0][0] != m[1][1]`), circle will scale `max(m[0][0], m[1][1])`.
+
+You can see how the shape changes with scale matrix below:
+
+```c++
+SP2C::SPC_Mat33 matrix = SP2C::SPC_MAT_IDENTITY;
+matrix.m[0][0] = 0.5; //xscale
+matrix.m[1][1] = 1; //yscale
+
+//center: (300, 300), size: (100, 80)
+SP2C::SPC_AABB aabb;
+aabb.SetBox(100, 80);
+aabb.Translate(300, 300);
+aabb.Transform(matrix);
+
+SP2C::SPC_Circle circle;
+circle.radius = 50;
+circle.position = Vec2(300, 300);
+
+SP2C::SPC_Shape* aabb2 = aabb.Clone();
+aabb2->Translate(200, 0);
+aabb2->Transform(matrix);
+
+SP2C::SPC_Shape* circle2 = circle.Clone();
+circle2->Translate(200, 0);
+circle2->Transform(matrix);
+```
+
+![Screenshot_5](https://user-images.githubusercontent.com/26345945/160278907-6f26a9e1-9b82-4309-b936-8b00962ec705.png)
+
+<p align="center">AABB decreases in width, but Circle doesn't. (scale = max(0.5, 1) = 1)</p>
+
+
+
+Scale matrix example 2:
+
+```
+SP2C::SPC_Mat33 matrix = SP2C::SPC_MAT_IDENTITY;
+matrix.m[0][0] = 0.5; //xscale
+matrix.m[1][1] = 1.5; //yscale
+
+//center: (300, 300), size: (100, 80)
+SP2C::SPC_AABB aabb;
+aabb.SetBox(100, 80);
+aabb.Translate(300, 300);
+aabb.Transform(matrix);
+
+SP2C::SPC_Circle circle;
+circle.radius = 50;
+circle.position = Vec2(300, 300);
+
+SP2C::SPC_Shape* aabb2 = aabb.Clone(); //Clone returns SPC_Shape pointer.
+aabb2->Translate(200, 0);
+aabb2->Transform(matrix);
+
+SP2C::SPC_Shape* circle2 = circle.Clone();
+circle2->Translate(200, 0);
+circle2->Transform(matrix);
+```
+
+![Screenshot_6](https://user-images.githubusercontent.com/26345945/160279101-dcb4ee7d-251e-4047-adb1-3a79d1f62829.png)
+
+<p align="center">AABB decreases in width and increases in height. Circle increases size. (scale = max(0.5, 1.5) = 1.5)</p>
+
+
+
+As AABB and Circle can not rotate, it works as:
+
+- AABB becomes boundary area of the rotated rectangle.
+- Circle does not change anything.
+
+You can see how the shape changes with rotation matrix below:
+
+```c++
+SP2C::SPC_Mat33 matrix = SP2C::SPC_MAT_IDENTITY;
+matrix.Rotate(30); //rotate +30 (degree)
+
+//center: (300, 300), size: (100, 80)
+SP2C::SPC_AABB aabb;
+aabb.SetBox(100, 80);
+aabb.Translate(300, 300);
+aabb.Transform(matrix);
+
+SP2C::SPC_Polygon polygon;
+polygon.SetBox(100, 80);
+polygon.Translate(300, 300);
+polygon.Transform(matrix);
+```
+
+![Screenshot_4](https://user-images.githubusercontent.com/26345945/160279143-4da8fd7e-6886-4394-94aa-31406601f51f.png)
+
+
+
+The image below shows how AABB and Polygon changes by rotation matrix.
+
+![rotation](https://user-images.githubusercontent.com/26345945/160279150-12b46141-92ce-414c-b3a0-b78f0196ee49.gif)
 

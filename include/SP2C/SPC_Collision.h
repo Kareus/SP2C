@@ -671,7 +671,7 @@ namespace SP2C
 
 		typedef bool (*SPC_CollideCallback) (SPC_Manifold* manifold);
 
-		SPC_CollideCallback CollideFunc[ShapeType::Count][ShapeType::Count] =
+		SPC_CollideCallback CollideFunc[SPC_Shape::Count][SPC_Shape::Count] =
 		{
 			{ AABB_to_AABB, AABB_to_Circle, AABB_to_Polygon },
 			{ Circle_to_AABB, Circle_to_Circle, Circle_to_Polygon },

@@ -4,17 +4,19 @@
 
 #include "SPC_Vector.h"
 #include "SPC_Math.h"
+#include "SPC_Mat33.h"
 #include <cassert>
 
 namespace SP2C
 {
-	enum ShapeType
-	{
-		AABB = 0, Circle, Polygon, Count
-	};
 
 	struct SPC_Shape
 	{
+		enum ShapeType
+		{
+			AABB = 0, Circle, Polygon, Count
+		};
+
 		ShapeType type;
 
 		virtual SPC_Shape* Clone() const = 0;
@@ -22,6 +24,7 @@ namespace SP2C
 		virtual void Translate(Vec2 p) {}
 		virtual void Scale(double k) {}
 		virtual void Rotate(double deg) {}
+		virtual void Transform(SPC_Mat33 matrix) {}
 	};
 
 	Vec2 AABB_normals[4] = { Vec2(0, -1), Vec2(1, 0), Vec2(0, 1), Vec2(-1, 0) };
@@ -66,6 +69,13 @@ namespace SP2C
 			vertices[3] = Vec2(min.x, max.y);
 		}
 
+		//set aabb vertices with size. center is (0, 0)
+		void SetBox(double w, double h)
+		{
+			min = Vec2(-w / 2, -h / 2);
+			max = Vec2(w / 2, h / 2);
+		}
+
 		void Translate(double x, double y) override
 		{
 			min.x += x, min.y += y;
@@ -85,6 +95,32 @@ namespace SP2C
 			max = ScaleVec(max, pivot, k);
 		}
 
+		void Transform(SPC_Mat33 matrix) override
+		{
+			Vec2 pivot = GetCenter();
+			min -= pivot;
+			max -= pivot;
+
+			Vec2 v[4];
+			v[0] = matrix * min;
+			v[1] = matrix * Vec2(min.x, max.y);
+			v[2] = matrix * Vec2(max.x, min.y);
+			v[3] = matrix * max;
+			
+			min = max = v[0];
+
+			for (int i = 1; i < 4; i++)
+			{
+				min.x = std::min(min.x, v[i].x);
+				min.y = std::min(min.y, v[i].y);
+				max.x = std::max(max.x, v[i].x);
+				max.y = std::max(max.y, v[i].y);
+			}
+
+			min += pivot;
+			max += pivot;
+		}
+
 		SPC_AABB ComputeAABB() const
 		{
 			return *this;
@@ -95,13 +131,6 @@ namespace SP2C
 	{
 		double radius;
 		Vec2 position;
-
-		SPC_Circle()
-		{
-			type = ShapeType::Circle;
-			radius = 0;
-			position = Vec2(0, 0);
-		}
 
 		SPC_Circle(double r = 0, Vec2 p = Vec2(0, 0)) : radius(r), position(p)
 		{
@@ -133,6 +162,16 @@ namespace SP2C
 		void Scale(double k) override
 		{
 			radius *= k;
+		}
+
+		void Transform(SPC_Mat33 matrix) override
+		{
+			position.x = position.x + matrix.m[0][2];
+			position.y = position.y + matrix.m[1][2];
+
+			double rot = 1; //for rotation
+			if (matrix.m[1][0] != 0) rot = std::sqrt(1 - matrix.m[1][0] * matrix.m[1][0]); //sin to cos
+			radius = radius * std::max(matrix.m[0][0], matrix.m[1][1]) / rot;
 		}
 	};
 
@@ -174,6 +213,7 @@ namespace SP2C
 			return center;
 		}
 
+		//set polygon vertices from vector array. result is a convex hull. you can set vertices directly with ordering=false
 		void Set(Vec2* v, unsigned int count, bool ordering = true)
 		{
 			assert(count > 2);
@@ -253,6 +293,7 @@ namespace SP2C
 			}
 		}
 
+		//set polygon vertices with size. center is (0, 0)
 		void SetBox(double w, double h)
 		{
 			vertexCount = 4;
@@ -293,6 +334,20 @@ namespace SP2C
 			{
 				vertices[i] = RotateVec(vertices[i], pivot, deg);
 				normals[i] = RotateVec(normals[i], VEC_ZERO, deg);
+			}
+		}
+		 
+		void Transform(SPC_Mat33 matrix) override
+		{
+			Vec2 pivot = GetCenter();
+			for (unsigned int i = 0; i < vertexCount; i++)
+			{
+				vertices[i] -= pivot;
+				vertices[i] = matrix * vertices[i];
+				vertices[i] += pivot;
+
+				normals[i] = Vec2(matrix.m[0][0] * normals[i].x + matrix.m[0][1] * normals[i].y, matrix.m[1][0] * normals[i].x + matrix.m[1][1] * normals[i].y);
+				normals[i].Normalize();
 			}
 		}
 

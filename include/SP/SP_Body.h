@@ -47,7 +47,7 @@ namespace SP2
 
 			switch (shape->type)
 			{
-			case ShapeType::Circle:
+			case SP_Shape::Circle:
 			{
 				SP_Circle* circle = reinterpret_cast<SP_Circle*>(shape);
 				massData.mass = PI * circle->radius * circle->radius * material.density;
@@ -57,7 +57,7 @@ namespace SP2
 			}
 				break;
 
-			case ShapeType::Polygon:
+			case SP_Shape::Polygon:
 			{
 				SP_Polygon* polygon = reinterpret_cast<SP_Polygon*>(shape);
 				double area = 0;

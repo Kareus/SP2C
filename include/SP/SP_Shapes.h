@@ -9,13 +9,13 @@
 
 namespace SP2
 {
-	enum ShapeType
-	{
-		Circle = 0, Polygon = 1, Count
-	};
-
 	struct SP_Shape
 	{
+		enum ShapeType
+		{
+			Circle = 0, Polygon = 1, Count
+		};
+
 		ShapeType type;
 		double orientation = 0;
 		Vec2 position = Vec2(0, 0);

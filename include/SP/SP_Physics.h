@@ -378,7 +378,7 @@ namespace SP2
 
 	typedef bool (*CollideCallback) (SP_Manifold* manifold);
 
-	CollideCallback CollideTest[ShapeType::Count][ShapeType::Count] =
+	CollideCallback CollideTest[SP_Shape::Count][SP_Shape::Count] =
 	{
 		{ Intersect_Circle_to_Circle, Intersect_Circle_to_Polygon },
 		{ Intersect_Polygon_to_Circle, Intersect_Polygon_to_Polygon }

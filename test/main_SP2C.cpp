@@ -186,7 +186,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 	{
 		switch (shapes[0]->type)
 		{ 
-			case ShapeType::AABB:
+			case SPC_Shape::AABB:
 			{
 				SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shapes[0]);
 				sf::RectangleShape rect;
@@ -202,7 +202,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 				return;
 			}
 
-			case ShapeType::Circle:
+			case SPC_Shape::Circle:
 			{
 				SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shapes[0]);
 				sf::CircleShape circle;
@@ -229,7 +229,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 		{
 			switch (shape->type)
 			{
-			case ShapeType::AABB:
+			case SPC_Shape::AABB:
 			{
 				SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shape);
 				sf::RectangleShape rect;
@@ -245,7 +245,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 				break;
 			}
 
-			case ShapeType::Circle:
+			case SPC_Shape::Circle:
 			{
 				SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shape);
 				sf::CircleShape circle;
@@ -510,7 +510,7 @@ int main()
 			Vec2 pos = { (double)(rand() % 800), (double)(rand() % 600) };
 
 			for (auto& s : roundrect)
-				if (s->type == ShapeType::AABB)
+				if (s->type == SPC_Shape::AABB)
 					reinterpret_cast<SPC_AABB*>(s)->Translate(pos.x, pos.y);
 				else
 					reinterpret_cast<SPC_Circle*>(s)->position += pos;
@@ -625,7 +625,7 @@ int main()
 			{
 				switch (shape[0]->type)
 				{
-					case ShapeType::AABB:
+					case SPC_Shape::AABB:
 					{
 						SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shape[0]);
 						sf::RectangleShape rect;
@@ -641,7 +641,7 @@ int main()
 						break;
 					}
 
-					case ShapeType::Circle:
+					case SPC_Shape::Circle:
 					{
 						SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shape[0]);
 						sf::CircleShape circle;
@@ -655,7 +655,7 @@ int main()
 						break;
 					}
 
-					case ShapeType::Polygon:
+					case SPC_Shape::Polygon:
 					{
 						SPC_Polygon* p = reinterpret_cast<SPC_Polygon*>(shape[0]);
 						sf::ConvexShape cv;
@@ -690,15 +690,15 @@ int main()
 			{
 				switch (s->type)
 				{
-				case ShapeType::AABB:
+				case SPC_Shape::AABB:
 					reinterpret_cast<SPC_AABB*>(s)->Translate(shape.velocity.x * delta, shape.velocity.y * delta);
 					break;
 
-				case ShapeType::Circle:
+				case SPC_Shape::Circle:
 					reinterpret_cast<SPC_Circle*>(s)->position += shape.velocity * delta;
 					break;
 
-				case ShapeType::Polygon:
+				case SPC_Shape::Polygon:
 				{
 					auto polygon = reinterpret_cast<SPC_Polygon*>(s);
 					polygon->Translate(shape.velocity.x * delta, shape.velocity.y * delta);

@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <cmath>
+#include "SPC_Constants.h"
 
 namespace SP2C
 {
@@ -40,7 +41,7 @@ namespace SP2C
 					m[i][j] = 0;
 		}
 
-		SPC_Mat33 operator+(SPC_Mat33& mat)
+		SPC_Mat33 operator+(SPC_Mat33 mat)
 		{
 			SPC_Mat33 ret;
 			for (int i = 0; i < 3; i++)
@@ -50,7 +51,7 @@ namespace SP2C
 			return ret;
 		}
 
-		SPC_Mat33 operator-(SPC_Mat33& mat)
+		SPC_Mat33 operator-(SPC_Mat33 mat)
 		{
 			SPC_Mat33 ret;
 			for (int i = 0; i < 3; i++)
@@ -86,7 +87,7 @@ namespace SP2C
 			return Vec2(m[0][0] * v.x + m[0][1] * v.y + m[0][2], m[1][0] * v.x + m[1][1] * v.y + m[1][2]);
 		}
 
-		SPC_Mat33& operator+=(SPC_Mat33& mat)
+		SPC_Mat33& operator+=(SPC_Mat33 mat)
 		{
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
@@ -95,7 +96,7 @@ namespace SP2C
 			return *this;
 		}
 
-		SPC_Mat33& operator-=(SPC_Mat33& mat)
+		SPC_Mat33& operator-=(SPC_Mat33 mat)
 		{;
 			for (int i = 0; i < 3; i++)
 				for (int j = 0; j < 3; j++)
@@ -110,6 +111,28 @@ namespace SP2C
 				for (int j = 0; j < 3; j++)
 					m[i][j] *= k;
 
+			return *this;
+		}
+
+		SPC_Mat33& operator=(SPC_Mat33 mat)
+		{
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					m[i][j] = mat.m[i][j];
+
+			return *this;
+		}
+
+		SPC_Mat33& operator*=(SPC_Mat33 mat)
+		{
+			SPC_Mat33 val;
+
+			for (int i = 0; i < 3; i++)
+				for (int j = 0; j < 3; j++)
+					for (int k = 0; k < 3; k++)
+						val.m[i][j] += m[i][k] * mat.m[k][j];
+
+			*this = val;
 			return *this;
 		}
 
@@ -151,8 +174,34 @@ namespace SP2C
 
 			return ret;
 		}
+
+		void Translate(double x, double y)
+		{
+			m[0][2] += x;
+			m[1][2] += y;
+		}
+
+		void Translate(Vec2 p)
+		{
+			m[0][2] += p.x;
+			m[1][2] += p.y;
+		}
+
+		void Scale(double k)
+		{
+			m[0][0] *= k;
+			m[1][1] *= k;
+		}
+
+		void Rotate(double deg)
+		{
+			double cos = std::cos(deg * Const::RAD);
+			double sin = std::sin(deg * Const::RAD);
+
+			*this *= SPC_Mat33(cos, -sin, 0, sin, cos, 0, 0, 0, 0);
+		}
 	};
 
-	const SPC_Mat33 MAT_IDENTITY = SPC_Mat33(1, 0, 0, 0, 1, 0, 0, 0, 1);
+	const SPC_Mat33 SPC_MAT_IDENTITY = SPC_Mat33(1, 0, 0, 0, 1, 0, 0, 0, 1);
 }
 #endif
