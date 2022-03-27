@@ -187,7 +187,7 @@ namespace SP2C
 
 			m->contact_count = 1;
 			m->normal = inside ? -normal : normal;
-			m->penetration = r - d;
+			m->penetration = inside ? 2 * r : r - d;
 			m->contact_points[0] = a->GetCenter() + closest;
 
 			return true;
