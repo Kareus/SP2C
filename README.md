@@ -228,7 +228,7 @@ circle2->Transform(matrix);
 
 ![Screenshot_5](https://user-images.githubusercontent.com/26345945/160278907-6f26a9e1-9b82-4309-b936-8b00962ec705.png)
 
-<p align="center">AABB decreases in width, but Circle doesn't. (scale = max(0.5, 1) = 1)</p>
+AABB decreases in width, but Circle doesn't. (`scale = max(0.5, 1) = 1`)
 
 
 
@@ -260,7 +260,7 @@ circle2->Transform(matrix);
 
 ![Screenshot_6](https://user-images.githubusercontent.com/26345945/160279101-dcb4ee7d-251e-4047-adb1-3a79d1f62829.png)
 
-<p align="center">AABB decreases in width and increases in height. Circle increases size. (scale = max(0.5, 1.5) = 1.5)</p>
+AABB decreases in width and increases in height. Circle increases size. (`scale = max(0.5, 1.5) = 1.5`)
 
 
 
