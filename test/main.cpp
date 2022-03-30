@@ -4,8 +4,8 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-#include "SP/SP_Shapes.h"
-#include "SP/SP_Engine.h"
+#include <SP/SP_Shapes.h>
+#include <SP/SP_Engine.h>
 
 using namespace std;
 using namespace SP2;

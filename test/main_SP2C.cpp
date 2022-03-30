@@ -6,8 +6,8 @@
 #include <vector>
 #include <SFML/Graphics.hpp>
 
-#include "SP2C/SPC_Shapes.h"
-#include "SP2C/SPC_Collision.h"
+#include <SP2C/SPC_Shapes.h>
+#include <SP2C/SPC_Collision.h>
 
 using namespace std;
 using namespace SP2C;
