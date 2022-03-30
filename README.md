@@ -92,8 +92,8 @@ There are two versions in this repository.
 
 
 ```c++
-#include "SP2C/SPC_Shapes.h"
-#include "SP2C/SPC_Collision.h"
+#include <SP2C/SPC_Shapes.h>
+#include <SP2C/SPC_Collision.h>
 
 SP2C::SPC_AABB box1;
 box1.min = SP2C::Vec2(100, 150);
