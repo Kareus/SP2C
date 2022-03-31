@@ -416,6 +416,8 @@ namespace SP2C
 				m->normal = { 1,0 };
 				m->contact_points[0] = a->position;
 			}
+			
+			return true;
 		}
 
 		bool Circle_to_Polygon(SPC_Circle& a, SPC_Polygon& b)
