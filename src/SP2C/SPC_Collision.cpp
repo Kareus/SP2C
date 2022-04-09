@@ -520,62 +520,16 @@ namespace SP2C
 
 		bool Polygon_to_Polygon(SPC_Polygon a, SPC_Polygon b)
 		{
-			unsigned int faceA;
-			double penetrationA = FindAxisLeastPenetration(&faceA, a.vertices, a.normals, a.vertexCount, b.vertices, b.vertexCount);
+			unsigned int temp;
+			double penetrationA = FindAxisLeastPenetration(&temp, a.vertices, a.normals, a.vertexCount, b.vertices, b.vertexCount);
 			if (penetrationA >= 0)
 				return false;
-
-			unsigned int faceB;
-			double penetrationB = FindAxisLeastPenetration(&faceB, b.vertices, b.normals, b.vertexCount, a.vertices, a.vertexCount);
+			
+			double penetrationB = FindAxisLeastPenetration(&temp, b.vertices, b.normals, b.vertexCount, a.vertices, a.vertexCount);
 			if (penetrationB >= 0)
 				return false;
 
-			unsigned int referenceIndex;
-
-			SPC_Polygon* ref, * inc;
-
-			if (penetrationA >= penetrationB)
-			{
-				ref = &a;
-				inc = &b;
-				referenceIndex = faceA;
-			}
-			else
-			{
-				ref = &b;
-				inc = &a;
-				referenceIndex = faceB;
-			}
-
-			Vec2 incidentFace[2];
-			FindIncidentFace(incidentFace, ref->normals[referenceIndex], inc->vertices, inc->normals, inc->vertexCount);
-
-			Vec2 v1 = ref->vertices[referenceIndex];
-			referenceIndex = referenceIndex + 1 < ref->vertexCount ? referenceIndex + 1 : 0;
-			Vec2 v2 = ref->vertices[referenceIndex];
-
-			Vec2 sidePlaneNormal = v2 - v1;
-			sidePlaneNormal.Normalize();
-
-			Vec2 refFaceNormal(sidePlaneNormal.y, -sidePlaneNormal.x);
-
-			double refC = DotProduct(refFaceNormal, v1);
-			double negSide = -DotProduct(sidePlaneNormal, v1);
-			double posSide = DotProduct(sidePlaneNormal, v2);
-
-			if (Clip(-sidePlaneNormal, negSide, incidentFace) < 2)
-				return false;
-
-			if (Clip(sidePlaneNormal, posSide, incidentFace) < 2)
-				return false;
-
-			for (int i = 0; i < 2; i++)
-			{
-				double separation = DotProduct(refFaceNormal, incidentFace[i]);
-				if (separation <= 0) return true;
-			}
-
-			return false;
+			return true;
 		}
 
 		bool Polygon_to_Polygon(SPC_Manifold* m)
