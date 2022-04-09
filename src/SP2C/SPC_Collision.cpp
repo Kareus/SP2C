@@ -422,10 +422,52 @@ namespace SP2C
 
 		bool Circle_to_Polygon(SPC_Circle& a, SPC_Polygon& b)
 		{
-			double r = a.radius * a.radius;
+			Vec2 center = a.position;
+
+			double separation = -DBL_MAX;
+			unsigned int faceNormal = 0;
+
 			for (unsigned int i = 0; i < b.vertexCount; i++)
-				if (r * r <= DistanceSquared(a.position, b.vertices[i])) return true;
-			return false;
+			{
+				double s = DotProduct(b.normals[i], center - b.vertices[i]);
+
+				if (s > a.radius) return false;
+
+				if (s > separation)
+				{
+					separation = s;
+					faceNormal = i;
+				}
+			}
+
+			Vec2 v1 = b.vertices[faceNormal];
+			unsigned int i2 = faceNormal + 1 < b.vertexCount ? faceNormal + 1 : 0;
+			Vec2 v2 = b.vertices[i2];
+
+			if (separation < 1e-4)
+				return true;
+
+			double dot1 = DotProduct(center - v1, v2 - v1);
+			double dot2 = DotProduct(center - v2, v1 - v2);
+
+			if (dot1 <= 0)
+			{
+				if (DistanceSquared(center, v1) > a.radius * a.radius)
+					return false;
+			}
+			else if (dot2 <= 0)
+			{
+				if (DistanceSquared(center, v2) > a.radius * a.radius)
+					return false;
+			}
+			else
+			{
+				Vec2 n = b.normals[faceNormal];
+				if (DotProduct(center - v1, n) > a.radius)
+					return false;
+			}
+
+			return true;
 		}
 
 		bool Circle_to_Polygon(SPC_Manifold* m)
