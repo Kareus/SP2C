@@ -145,12 +145,8 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 	else
 		for (int i = 0; i < N; i++) idx.push_back(N - i - 1);
 
-	int maxLoop = 2 * N;
-
 	for (int j = N - 1; N > 2;)
 	{
-		if (maxLoop-- <= 0) break;
-
 		int i = j % N;
 		j = (i + 1) % N;
 		int k = (j + 1) % N;
@@ -172,7 +168,6 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 			for (int t = j; t < N - 1; t++) idx[t] = idx[t + 1];
 
 			N--;
-			maxLoop = 2 * N;
 		}
 
 	}
