@@ -171,15 +171,15 @@ SP2C::Vec2 f = -m.normal * m.penetration; //invert direction for restitution
 
 switch (m.A->type)
 {
-    case SP2C::ShapeType::AABB:
+    case SP2C::SPC_Shape::AABB:
         reinterpret_cast<SP2C::SPC_AABB*>(m.A)->Translate(f.x, f.y);
         break;
     
-    case SP2C::ShapeType::Circle:
+    case SP2C::SPC_Shape::Circle:
         reinterpret_cast<SP2C::SPC_Circle*>(m.A)->position += f;
         break;
     
-    case SP2C::ShapeType::Polygon:
+    case SP2C::SPC_Shape::Polygon:
         reinterpret_cast<SP2C::SPC_Polygon*>(m.A)->Translate(f.x, f.y);
         break;
         
