@@ -112,7 +112,7 @@ namespace SP2C
 
 	SPC_AABB SPC_Circle::ComputeAABB() const
 	{
-		return SPC_AABB(Vec2(position.x - radius, position.y - radius), Vec2(position.y + radius, position.y + radius));
+		return SPC_AABB(Vec2(position.x - radius, position.y - radius), Vec2(position.x + radius, position.y + radius));
 	}
 
 	void SPC_Circle::Translate(double x, double y)
