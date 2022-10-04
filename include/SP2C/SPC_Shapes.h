@@ -59,7 +59,17 @@ namespace SP2C
 		void Transform(SPC_Mat33 matrix) override;
 
 		SPC_AABB ComputeAABB() const;
+
+		void Combine(SPC_AABB aabb);
+
+		SPC_AABB CombineAs(SPC_AABB aabb) const;
+
+		bool Contains(Vec2 v) const;
+
+		bool Contains(SPC_AABB aabb) const;
 	};
+
+	SPC_AABB CombineAABB(SPC_AABB a, SPC_AABB b);
 
 	struct SPC_Circle : public SPC_Shape
 	{
@@ -112,5 +122,7 @@ namespace SP2C
 
 		SPC_AABB ComputeAABB() const;
 	};
+	
+	SPC_AABB ComputeAABB(SPC_Shape* shape);
 }
 #endif

@@ -33,14 +33,6 @@ namespace SP2C
 
 		bool operator!=(Vec2 a) const;
 
-		bool operator<(Vec2 a) const;
-
-		bool operator<=(Vec2 a) const;
-
-		bool operator>(Vec2 a) const;
-
-		bool operator>=(Vec2 a) const;
-
 		Vec2 operator-() const;
 
 		double LengthSquared();

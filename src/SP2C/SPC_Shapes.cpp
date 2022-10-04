@@ -95,6 +95,34 @@ namespace SP2C
 		return *this;
 	}
 
+	void SPC_AABB::Combine(SPC_AABB aabb)
+	{
+		min.x = std::min(min.x, aabb.min.x);
+		min.y = std::min(min.y, aabb.min.y);
+
+		max.x = std::max(max.x, aabb.max.x);
+		max.y = std::max(max.y, aabb.max.y);
+	}
+
+	SPC_AABB SPC_AABB::CombineAs(SPC_AABB aabb) const
+	{
+		return SP2C::SPC_AABB(SP2C::Vec2(std::min(min.x, aabb.min.x), std::min(min.y, aabb.min.y)), SP2C::Vec2(std::max(max.x, aabb.max.x), std::max(max.y, aabb.max.y)));
+	}
+
+	bool SPC_AABB::Contains(Vec2 v) const
+	{
+		return (min.x <= v.x && v.x <= max.x) && (min.y <= v.y && v.y <= max.y);
+	}
+
+	bool SPC_AABB::Contains(SPC_AABB aabb) const
+	{
+		return (min.x <= aabb.min.x && aabb.max.x <= max.x) && (min.y <= aabb.min.y && aabb.max.y <= max.y);
+	}
+
+	SPC_AABB CombineAABB(SPC_AABB a, SPC_AABB b)
+	{
+		return a.CombineAs(b);
+	}
 
 	/////
 	///// SPC_Circle
@@ -325,5 +353,23 @@ namespace SP2C
 		}
 
 		return SPC_AABB(Vec2(x1, y1), Vec2(x2, y2));
+	}
+	
+	SP2C::SPC_AABB ComputeAABB(SPC_Shape* shape)
+	{
+		switch (shape->type)
+		{
+		case SPC_Shape::AABB:
+			return reinterpret_cast<SP2C::SPC_AABB*>(shape)->ComputeAABB();
+
+		case SPC_Shape::Circle:
+			return reinterpret_cast<SP2C::SPC_Circle*>(shape)->ComputeAABB();
+
+		case SPC_Shape::Polygon:
+			return reinterpret_cast<SP2C::SPC_Polygon*>(shape)->ComputeAABB();
+
+		default:
+			return SP2C::SPC_AABB();
+		}
 	}
 }

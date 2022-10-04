@@ -1,4 +1,4 @@
-#include <SP2C/SPC_Vector.h>
+#include "SPC_Vector.h"
 
 namespace SP2C
 {
@@ -62,30 +62,6 @@ namespace SP2C
 	bool Vec2::operator!=(Vec2 a) const
 	{
 		return !(*this == a);
-	}
-
-	bool Vec2::operator<(Vec2 a) const
-	{
-		if (x == a.x) return y < a.y;
-		return x < a.x;
-	}
-
-	bool Vec2::operator<=(Vec2 a) const
-	{
-		if (x == a.x) return y <= a.y;
-		return x < a.x;
-	}
-
-	bool Vec2::operator>(Vec2 a) const
-	{
-		if (x == a.x) return y > a.y;
-		return x > a.x;
-	}
-
-	bool Vec2::operator>=(Vec2 a) const
-	{
-		if (x == a.x) return y >= a.y;
-		return x >= a.x;
 	}
 
 	Vec2 Vec2::operator-() const
