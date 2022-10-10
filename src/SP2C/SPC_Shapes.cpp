@@ -124,6 +124,11 @@ namespace SP2C
 		return a.CombineAs(b);
 	}
 
+	double GetArea(SPC_AABB a)
+	{
+		return (a.max.x - a.min.x) * (a.max.y - a.min.y);
+	}
+
 	/////
 	///// SPC_Circle
 

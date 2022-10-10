@@ -71,6 +71,8 @@ namespace SP2C
 
 	SPC_AABB CombineAABB(SPC_AABB a, SPC_AABB b);
 
+	double GetArea(SPC_AABB a);
+
 	struct SPC_Circle : public SPC_Shape
 	{
 		double radius;
