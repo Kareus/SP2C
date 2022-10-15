@@ -1,4 +1,4 @@
-#include <SP2C/SPC_Collision.h>
+#include "SPC_Collision.h"
 
 namespace SP2C
 {
@@ -416,8 +416,6 @@ namespace SP2C
 				m->normal = { 1,0 };
 				m->contact_points[0] = a->position;
 			}
-			
-			return true;
 		}
 
 		bool Circle_to_Polygon(SPC_Circle& a, SPC_Polygon& b)
@@ -562,12 +560,13 @@ namespace SP2C
 
 		bool Polygon_to_Polygon(SPC_Polygon a, SPC_Polygon b)
 		{
-			unsigned int temp;
-			double penetrationA = FindAxisLeastPenetration(&temp, a.vertices, a.normals, a.vertexCount, b.vertices, b.vertexCount);
+			unsigned int faceA;
+			double penetrationA = FindAxisLeastPenetration(&faceA, a.vertices, a.normals, a.vertexCount, b.vertices, b.vertexCount);
 			if (penetrationA >= 0)
 				return false;
-			
-			double penetrationB = FindAxisLeastPenetration(&temp, b.vertices, b.normals, b.vertexCount, a.vertices, a.vertexCount);
+
+			unsigned int faceB;
+			double penetrationB = FindAxisLeastPenetration(&faceB, b.vertices, b.normals, b.vertexCount, a.vertices, a.vertexCount);
 			if (penetrationB >= 0)
 				return false;
 
@@ -662,6 +661,39 @@ namespace SP2C
 		bool Collide(SPC_Manifold* m)
 		{
 			return CollideFunc[m->A->type][m->B->type](m);
+		}
+
+		bool Collide(SPC_Shape* a, SPC_Shape* b)
+		{
+			switch (a->type)
+			{
+			case SPC_Shape::ShapeType::AABB:
+				if (b->type == SPC_Shape::ShapeType::AABB)
+					return AABB_to_AABB(*reinterpret_cast<SPC_AABB*>(a), *reinterpret_cast<SPC_AABB*>(b));
+				else if (b->type == SPC_Shape::ShapeType::Circle)
+					return AABB_to_Circle(*reinterpret_cast<SPC_AABB*>(a), *reinterpret_cast<SPC_Circle*>(b));
+				else
+					return AABB_to_Polygon(*reinterpret_cast<SPC_AABB*>(a), *reinterpret_cast<SPC_Polygon*>(b));
+
+			case SPC_Shape::ShapeType::Circle:
+				if (b->type == SPC_Shape::ShapeType::AABB)
+					return AABB_to_Circle(*reinterpret_cast<SPC_AABB*>(b), *reinterpret_cast<SPC_Circle*>(a));
+				else if (b->type == SPC_Shape::ShapeType::Circle)
+					return Circle_to_Circle(*reinterpret_cast<SPC_Circle*>(a), *reinterpret_cast<SPC_Circle*>(b));
+				else
+					return Circle_to_Polygon(*reinterpret_cast<SPC_Circle*>(a), *reinterpret_cast<SPC_Polygon*>(b));
+
+			case SPC_Shape::ShapeType::Polygon:
+				if (b->type == SPC_Shape::ShapeType::AABB)
+					return AABB_to_Polygon(*reinterpret_cast<SPC_AABB*>(b), *reinterpret_cast<SPC_Polygon*>(a));
+				else if (b->type == SPC_Shape::ShapeType::Circle)
+					return Circle_to_Polygon(*reinterpret_cast<SPC_Circle*>(b), *reinterpret_cast<SPC_Polygon*>(a));
+				else
+					return Polygon_to_Polygon(*reinterpret_cast<SPC_Polygon*>(a), *reinterpret_cast<SPC_Polygon*>(b));
+			}
+
+			//unknown shape
+			return false;
 		}
 	}
 }

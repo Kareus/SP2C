@@ -58,6 +58,8 @@ namespace SP2C
 		};
 
 		bool Collide(SPC_Manifold* m);
+
+		bool Collide(SPC_Shape* a, SPC_Shape* b);
 	}
 }
 #endif
