@@ -1,4 +1,4 @@
-#include "SPC_Shapes.h"
+#include <SP2C/SPC_Shapes.h>
 
 namespace SP2C
 {

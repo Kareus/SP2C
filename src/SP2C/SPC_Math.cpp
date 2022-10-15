@@ -1,4 +1,4 @@
-#include "SPC_Math.h"
+#include <SP2C/SPC_Math.h>
 
 namespace SP2C
 {
