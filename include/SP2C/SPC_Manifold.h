@@ -2,8 +2,8 @@
 #ifndef __SPC_MANIFOLD__
 #define __SPC_MANIFOLD__
 
-#include "SPC_Vector.h"
-#include "SPC_Shapes.h"
+#include <SP2C/SPC_Vector.h>
+#include <SP2C/SPC_Shapes.h>
 
 namespace SP2C
 {

@@ -15,6 +15,13 @@ namespace SP2C
 		type = ShapeType::AABB;
 	}
 
+	SPC_AABB::SPC_AABB(const SPC_AABB& aabb)
+	{
+		type = ShapeType::AABB;
+		min = aabb.min;
+		max = aabb.max;
+	}
+
 	SPC_Shape* SPC_AABB::Clone() const
 	{
 		SPC_AABB* aabb = new SPC_AABB(min, max);
@@ -31,7 +38,7 @@ namespace SP2C
 		return 0.5 * (max - min);
 	}
 
-	void SPC_AABB::GetVertices(Vec2* vertices)
+	void SPC_AABB::GetVertices(Vec2* vertices) const
 	{
 		vertices[0] = min;
 		vertices[1] = Vec2(max.x, min.y);
@@ -41,8 +48,8 @@ namespace SP2C
 
 	void SPC_AABB::SetBox(double w, double h)
 	{
-		min = Vec2(-w / 2, -h / 2);
-		max = Vec2(w / 2, h / 2);
+		min = Vec2(0, 0);
+		max = Vec2(w, h);
 	}
 
 	void SPC_AABB::Translate(double x, double y)
@@ -59,16 +66,16 @@ namespace SP2C
 
 	void SPC_AABB::Scale(double k)
 	{
-		Vec2 pivot = GetCenter();
-		min = ScaleVec(min, pivot, k);
-		max = ScaleVec(max, pivot, k);
+		//Vec2 pivot = GetCenter();
+		min = ScaleVec(min, VEC_ZERO, k);
+		max = ScaleVec(max, VEC_ZERO, k);
 	}
 
 	void SPC_AABB::Transform(SPC_Mat33 matrix)
 	{
-		Vec2 pivot = GetCenter();
-		min -= pivot;
-		max -= pivot;
+		//Vec2 pivot = GetCenter();
+		//min -= pivot;
+		//max -= pivot;
 
 		Vec2 v[4];
 		v[0] = matrix * min;
@@ -86,8 +93,8 @@ namespace SP2C
 			max.y = std::max(max.y, v[i].y);
 		}
 
-		min += pivot;
-		max += pivot;
+		//min += pivot;
+		//max += pivot;
 	}
 
 	SPC_AABB SPC_AABB::ComputeAABB() const
@@ -129,12 +136,26 @@ namespace SP2C
 		return (a.max.x - a.min.x) * (a.max.y - a.min.y);
 	}
 
+	SPC_AABB& SPC_AABB::operator=(const SPC_AABB& aabb)
+	{
+		min = aabb.min;
+		max = aabb.max;
+		return *this;
+	}
+
 	/////
 	///// SPC_Circle
 
 	SPC_Circle::SPC_Circle(double r, Vec2 p) : radius(r), position(p)
 	{
 		type = ShapeType::Circle;
+	}
+
+	SPC_Circle::SPC_Circle(const SPC_Circle& circle)
+	{
+		type = ShapeType::Circle;
+		radius = circle.radius;
+		position = circle.position;
 	}
 
 	SPC_Shape* SPC_Circle::Clone() const
@@ -174,6 +195,13 @@ namespace SP2C
 		radius = radius * std::max(matrix.m[0][0], matrix.m[1][1]) / rot;
 	}
 
+	SPC_Circle& SPC_Circle::operator=(const SPC_Circle& circle)
+	{
+		radius = circle.radius;
+		position = circle.position;
+		return *this;
+	}
+
 	/////
 	///// SPC_Polygon
 
@@ -181,6 +209,18 @@ namespace SP2C
 	{
 		type = ShapeType::Polygon;
 		vertexCount = 0;
+	}
+
+	SPC_Polygon::SPC_Polygon(const SPC_Polygon& polygon)
+	{
+		type = ShapeType::Polygon;
+		vertexCount = polygon.vertexCount;
+
+		for (unsigned int i = 0; i < vertexCount; i++)
+		{
+			vertices[i] = polygon.vertices[i];
+			normals[i] = polygon.normals[i];
+		}
 	}
 
 	SPC_Shape* SPC_Polygon::Clone() const
@@ -290,10 +330,10 @@ namespace SP2C
 	void SPC_Polygon::SetBox(double w, double h)
 	{
 		vertexCount = 4;
-		vertices[0] = { -w / 2, -h / 2 };
-		vertices[1] = { w / 2, -h / 2 };
-		vertices[2] = { w / 2, h / 2 };
-		vertices[3] = { -w / 2, h / 2 };
+		vertices[0] = { 0, 0 };
+		vertices[1] = { w, 0 };
+		vertices[2] = { w, h };
+		vertices[3] = { 0, h };
 
 		normals[0] = { 0, -1 };
 		normals[1] = { 1, 0 };
@@ -315,31 +355,38 @@ namespace SP2C
 
 	void SPC_Polygon::Scale(double k)
 	{
-		Vec2 pivot = GetCenter();
+		//Vec2 pivot = GetCenter();
 		for (unsigned int i = 0; i < vertexCount; i++)
-			vertices[i] = ScaleVec(vertices[i], pivot, k);
+			vertices[i] = ScaleVec(vertices[i], VEC_ZERO, k);
 	}
 
 	void SPC_Polygon::Rotate(double deg)
 	{
-		Vec2 pivot = GetCenter();
+		//Vec2 pivot = GetCenter();
 		for (unsigned int i = 0; i < vertexCount; i++)
 		{
-			vertices[i] = RotateVec(vertices[i], pivot, deg);
+			vertices[i] = RotateVec(vertices[i], VEC_ZERO, deg); //RotateVec(vertices[i], pivot, deg);
 			normals[i] = RotateVec(normals[i], VEC_ZERO, deg);
 		}
 	}
 
 	void SPC_Polygon::Transform(SPC_Mat33 matrix)
 	{
-		Vec2 pivot = GetCenter();
+		//Vec2 pivot = GetCenter();
 		for (unsigned int i = 0; i < vertexCount; i++)
 		{
-			vertices[i] -= pivot;
+			//vertices[i] -= pivot;
 			vertices[i] = matrix * vertices[i];
-			vertices[i] += pivot;
+			//vertices[i] += pivot;
+		}
 
-			normals[i] = Vec2(matrix.m[0][0] * normals[i].x + matrix.m[0][1] * normals[i].y, matrix.m[1][0] * normals[i].x + matrix.m[1][1] * normals[i].y);
+		for (unsigned int i = 0; i < vertexCount; i++)
+		{
+			unsigned int i2 = i + 1 < vertexCount ? i + 1 : 0;
+			Vec2 face = vertices[i2] - vertices[i];
+			assert(face.LengthSquared() > 1e-8);
+
+			normals[i] = Vec2(face.y, -face.x);
 			normals[i].Normalize();
 		}
 	}
@@ -359,22 +406,35 @@ namespace SP2C
 
 		return SPC_AABB(Vec2(x1, y1), Vec2(x2, y2));
 	}
-	
-	SP2C::SPC_AABB ComputeAABB(SPC_Shape* shape)
+
+	SPC_Polygon& SPC_Polygon::operator=(const SPC_Polygon& polygon)
+	{
+		vertexCount = polygon.vertexCount;
+
+		for (unsigned int i = 0; i < vertexCount; i++)
+		{
+			vertices[i] = polygon.vertices[i];
+			normals[i] = polygon.normals[i];
+		}
+
+		return *this;
+	}
+
+	SPC_AABB ComputeAABB(SPC_Shape* shape)
 	{
 		switch (shape->type)
 		{
 		case SPC_Shape::AABB:
-			return reinterpret_cast<SP2C::SPC_AABB*>(shape)->ComputeAABB();
+			return reinterpret_cast<SPC_AABB*>(shape)->ComputeAABB();
 
 		case SPC_Shape::Circle:
-			return reinterpret_cast<SP2C::SPC_Circle*>(shape)->ComputeAABB();
+			return reinterpret_cast<SPC_Circle*>(shape)->ComputeAABB();
 
 		case SPC_Shape::Polygon:
-			return reinterpret_cast<SP2C::SPC_Polygon*>(shape)->ComputeAABB();
+			return reinterpret_cast<SPC_Polygon*>(shape)->ComputeAABB();
 
 		default:
-			return SP2C::SPC_AABB();
+			return SPC_AABB();
 		}
 	}
 }

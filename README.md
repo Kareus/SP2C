@@ -5,26 +5,15 @@ SP2C (Simple Physics 2D Collisions) is a simple 2d collision detection library w
 
 ![main_image](https://user-images.githubusercontent.com/26345945/159725133-2c1e9574-4a68-4fdf-befa-155dde2f9a22.png)
 
-
+### References
+- Randygaul's [tutorials](https://tutsplus.com/authors/randy-gaul) on tutsplus
+- [ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) github
 
 ### Contents
 
-
-There are two versions in this repository.
-
-* SP2 (in `include/SP` directory)
-
-  - implements physics engine following Randygaul's [tutorials](https://tutsplus.com/authors/randy-gaul) on tutsplus and [ImpulseEngine](https://github.com/RandyGaul/ImpulseEngine) github.
-
-  - implements Circle and Polygon (Convex).
-
-    
-
-* SP2C (in `include/SP2C` directory)
+SP2C
 
   - implements only collision detections. (whether two shapes are colliding and a manifold)
-
-  - fixed some errors from original tutorial codes.
 
   - implements AABB, Circle, Polygon (Convex).
 
@@ -36,29 +25,7 @@ There are two versions in this repository.
 
       Also you can create a box polygon with function `SetBox`. Use it when you need rotating boxes.
 
-  - I also implemented some custom shapes in `test/main_SP2C.cpp`, like RoundRect and Concaves.
-
-    - RoundRect is a group of circles and aabbs.
-
-      You can set draw mode to draw each circles and boxes, or outline of roundrect.
-
-      See function `createRoundRect` and `drawRoundRect`.
-
-    - Concave is converted into a group of triangles using Ear Clipping triangulation algorithm.
-
-      Due to the generation code in main function, it can be actually a convex in random cases.
-
-      You can set draw mode to draw each triangles, or outline of concave.
-
-      See function `triangulation` and `drawTriangles`.
-
   - Only a single polygon can rotate.
-
-    - You can test rotating polygons with the option,
-
-      ```c++
-      #define ROTATE_POLYGON_TEST 1 //line 15 in test/main_SP2C.cpp
-      ```
 
     - AABB (as it is axis-aligned) and Circles, for sure, don't rotate.
     
@@ -69,6 +36,32 @@ There are two versions in this repository.
     See `SPC_Shapes.h` or examples below.
 
 
+  - In `test/main_SP2C.cpp`
+    - I also implemented some custom shapes, like RoundRect and Concaves.
+
+      - RoundRect is a group of circles and aabbs.
+
+        You can set draw mode to draw each circles and boxes, or outline of roundrect.
+
+        See function `createRoundRect` and `drawRoundRect`.
+
+      - Concave is converted into a group of triangles using Ear Clipping triangulation algorithm.
+
+        Due to the generation code in main function, it can be actually a convex in random cases.
+
+        You can set draw mode to draw each triangles, or outline of concave.
+
+        See function `triangulation` and `drawTriangles`.
+
+      - You can test rotating polygons with the option,
+
+        ```c++
+        #define ROTATE_POLYGON_TEST 1 //line 15 in test/main_SP2C.cpp
+        ```
+
+      - You can move a shape with arrow keys to test collisions
+
+
 
 - Others
 
@@ -76,15 +69,7 @@ There are two versions in this repository.
 
   - environment : C++17, Visual Studio 2019, SFML 2.5.1
 
-  - You can build `test/main_SP2C.cpp`  with defining in `test/test_def.h`,
-
-    ```c++
-    #define __MAIN_SP2C__
-    ```
-
-    Or you can build `test/main.cpp` undefining the option.
-
-  - Please let me know if there is a problem or something to fix, via gmail.
+  - Please let me know if there is a problem or something to fix.
 
 
 

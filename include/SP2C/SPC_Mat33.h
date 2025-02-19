@@ -4,8 +4,8 @@
 
 #include <cassert>
 #include <cmath>
-#include "SPC_Constants.h"
-#include "SPC_Vector.h"
+#include <SP2C/SPC_Constants.h>
+#include <SP2C/SPC_Vector.h>
 
 namespace SP2C
 {

@@ -3,10 +3,10 @@
 #define __SPC_COLLISION__
 
 #include <algorithm>
-#include "SPC_Vector.h"
-#include "SPC_Math.h"
-#include "SPC_Shapes.h"
-#include "SPC_Manifold.h"
+#include <SP2C/SPC_Vector.h>
+#include <SP2C/SPC_Math.h>
+#include <SP2C/SPC_Shapes.h>
+#include <SP2C/SPC_Manifold.h>
 
 namespace SP2C
 {
@@ -44,7 +44,7 @@ namespace SP2C
 
 		bool Polygon_to_Circle(SPC_Manifold* m);
 
-		bool Polygon_to_Polygon(SPC_Polygon a, SPC_Polygon b);
+		bool Polygon_to_Polygon(SPC_Polygon& a, SPC_Polygon& b);
 
 		bool Polygon_to_Polygon(SPC_Manifold* m);
 

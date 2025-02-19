@@ -250,6 +250,7 @@ namespace SP2C
 
 			Vec2 refFaceNormal(sidePlaneNormal.y, -sidePlaneNormal.x);
 
+			double refC = DotProduct(refFaceNormal, v1);
 			double negSide = -DotProduct(sidePlaneNormal, v1);
 			double posSide = DotProduct(sidePlaneNormal, v2);
 
@@ -261,7 +262,7 @@ namespace SP2C
 
 			for (int i = 0; i < 2; i++)
 			{
-				double separation = DotProduct(refFaceNormal, incidentFace[i]);
+				double separation = DotProduct(refFaceNormal, incidentFace[i]) - refC;
 				if (separation <= 0) return true;
 			}
 
@@ -560,7 +561,7 @@ namespace SP2C
 			return ret;
 		}
 
-		bool Polygon_to_Polygon(SPC_Polygon a, SPC_Polygon b)
+		bool Polygon_to_Polygon(SPC_Polygon& a, SPC_Polygon& b)
 		{
 			unsigned int faceA;
 			double penetrationA = FindAxisLeastPenetration(&faceA, a.vertices, a.normals, a.vertexCount, b.vertices, b.vertexCount);

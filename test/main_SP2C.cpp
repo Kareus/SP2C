@@ -1,16 +1,14 @@
-#include "test_def.h"
-
-#if __MAIN_SP2C__
-
 #include <iostream>
 #include <vector>
 #include <SFML/Graphics.hpp>
+#include <map>
 
 #include <SP2C/SPC_Shapes.h>
 #include <SP2C/SPC_Collision.h>
 
 using namespace std;
 using namespace SP2C;
+using namespace SP2C::Const;
 
 #define ROTATE_POLYGON_TEST 0
 
@@ -139,6 +137,9 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 		area += CrossProduct(v[(i + 1) % N], v[i]);
 
 	vector<int> idx;
+	vector<int> cnt;
+	map<pair<int, int>, int> edge;
+	cnt.resize(N, 0);
 
 	if (area < 0)
 		for (int i = 0; i < N; i++) idx.push_back(i);
@@ -147,6 +148,7 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 
 	for (int j = N - 1; N > 2;)
 	{
+
 		int i = j % N;
 		j = (i + 1) % N;
 		int k = (j + 1) % N;
@@ -160,7 +162,9 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 		if (ear)
 		{
 			triangle[0] = v[idx[i]], triangle[1] = v[idx[j]], triangle[2] = v[idx[k]];
+			pair<int, int> ab = { min(idx[i], idx[j]), max(idx[i], idx[j]) }, bc = { min(idx[j], idx[k]), max(idx[j], idx[k]) }, ca = { min(idx[k], idx[i]), max(idx[k], idx[i]) };
 
+			edge[ab]++, edge[bc]++, edge[ca]++;
 			SPC_Polygon* polygon = new SPC_Polygon;
 			polygon->Set(triangle, 3, false); //to make outline drawing simple
 			ret.push_back(polygon);
@@ -172,6 +176,19 @@ vector<SPC_Shape*> triangulation(const vector<Vec2>& v) //polygon triangulation 
 
 	}
 
+	for (auto& p : edge)
+		if (p.second == 1) cnt[p.first.first]++, cnt[p.first.second]++;
+
+	int num = 0;
+	N = v.size();
+	for (int i = 0; i < N; i++)
+		if (cnt[i])
+		{
+			num++;
+			cout << i << ' ';
+		}
+
+	cout << ": " << num << "," << N << endl;
 	return ret;
 }
 
@@ -194,6 +211,7 @@ void drawRoundRect(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 				rect.setOutlineColor(color);
 				rect.setOutlineThickness(1);
 				target.draw(rect);
+
 				return;
 			}
 
@@ -371,7 +389,7 @@ void drawTriangles(sf::RenderTarget& target, vector<SPC_Shape*>& shapes, sf::Col
 {
 	sf::Color cc[3] = { sf::Color::Red, sf::Color::Green, sf::Color::Blue };
 	
-	static const int triangle_mode = 2;
+	static const int triangle_mode = 1;
 
 	if (triangle_mode == 1)
 	{
@@ -463,6 +481,7 @@ int main()
 		if (seed == 0) //circle
 		{
 			auto circle = createCircle(rand() % 100 + rand() % 100 * 0.01);
+
 			circle->position = { (double)(rand() % 800), (double)(rand() % 600) };
 			
 			tester.shapes = { circle };
@@ -538,6 +557,31 @@ int main()
 			shapes.push_back(tester);
 		}
 	}
+	
+	/*
+	SP2C::SPC_AABB aabb;
+	aabb.SetBox(50, 50);
+	aabb.Translate(300, 100);
+
+	SP2C::SPC_Polygon polygon;
+	polygon.SetBox(200, 200);
+	polygon.Translate(300, 300);
+
+	SP2C::SPC_Circle circle;
+	circle.radius = 50;
+	circle.position = Vec2(145, 280);
+	//circle.position = Vec2(100, 300);
+
+	tester.shapes = { &aabb };
+	shapes.push_back(tester);
+
+	tester.shapes = { &polygon };
+	shapes.push_back(tester);
+
+	tester.shapes = { &circle };
+	//tester.velocity = Vec2(50, 0);
+	shapes.push_back(tester);
+	*/
 
 	SPC_Manifold m;
 
@@ -554,7 +598,9 @@ int main()
 	fpsCounter.setCharacterSize(18);
 
 	double fpsTime = 0;
+	double scaleValue = 1;
 	int fpsCount = 0, fps = 0;
+	int keycheck = 0;
 
 	while (window.isOpen()) //window
 	{
@@ -582,21 +628,53 @@ int main()
 
 		window.clear();
 
+		/*
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) keycheck++;
+		if (!keycheck)
+		{
+			window.display();
+			continue;
+		}
+		*/
+
+		//matrix.m[0][0] = scaleValue;
+		//scaleValue -= 0.1 * delta;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) shapes[0].shapes[0]->Translate(0, -100 * delta);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) shapes[0].shapes[0]->Translate(0, 100 * delta);
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) shapes[0].shapes[0]->Translate(-100 * delta, 0);
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) shapes[0].shapes[0]->Translate(100 * delta, 0);
+		
 		for (int i = 0; i < shapes.size(); i++) //collide test
 			for (int j = i + 1; j < shapes.size(); j++)
 			{
 				bool check = false;
 				for (int ii = 0; ii < shapes[i].shapes.size() && !check; ii++)
 				{
-					m.A = shapes[i].shapes[ii];
+					m.A = shapes[i].shapes[ii]->Clone();
+					//m.A->Transform(matrix);
 
 					for (int jj = 0; jj < shapes[j].shapes.size() && !check; jj++)
 					{
-						m.B = shapes[j].shapes[jj];
+						m.B = shapes[j].shapes[jj]->Clone();
+						//m.B->Transform(matrix);
+
 						if (Collision::Collide(&m))
 						{
+							//shapes[i].velocity = Vec2(0, 0);
+							//shapes[j].velocity = Vec2(0, 0);
+
 							shapes[i].collided = shapes[j].collided = true;
 							check = true;
+
+							/*
+							for (auto& shape : shapes[i].shapes)
+								shape->Translate(-m.normal * m.penetration * delta);
+
+							for (auto& shape : shapes[j].shapes)
+								shape->Translate(m.normal * m.penetration * delta);
+								*/
 
 							sf::VertexArray arr(sf::Lines);
 							sf::Vector2f contact = sf::Vector2f(m.contact_points[0].x, m.contact_points[0].y);
@@ -607,10 +685,14 @@ int main()
 
 							window.draw(arr);
 						}
+
+						delete m.B;
 					}
+
+					delete m.A;
 				}
 			}
-
+		
 		for (auto& test : shapes) //draw shapes
 		{
 			sf::Color color = test.collided ? sf::Color::Red : sf::Color::White;
@@ -622,7 +704,8 @@ int main()
 				{
 					case SPC_Shape::AABB:
 					{
-						SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shape[0]);
+						SPC_AABB* a = reinterpret_cast<SPC_AABB*>(shape[0]->Clone());
+						//a->Transform(matrix);
 						sf::RectangleShape rect;
 						auto extent = a->GetExtent();
 						auto pos = a->GetCenter();
@@ -633,12 +716,15 @@ int main()
 						rect.setOutlineColor(color);
 						rect.setOutlineThickness(1);
 						window.draw(rect);
+
+						delete a;
 						break;
 					}
 
 					case SPC_Shape::Circle:
 					{
-						SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shape[0]);
+						SPC_Circle* c = reinterpret_cast<SPC_Circle*>(shape[0]->Clone());
+						//c->Transform(matrix);
 						sf::CircleShape circle;
 						circle.setRadius(c->radius);
 						circle.setOrigin(c->radius, c->radius);
@@ -647,12 +733,15 @@ int main()
 						circle.setOutlineColor(color);
 						circle.setOutlineThickness(1);
 						window.draw(circle);
+
+						delete c;
 						break;
 					}
 
 					case SPC_Shape::Polygon:
 					{
-						SPC_Polygon* p = reinterpret_cast<SPC_Polygon*>(shape[0]);
+						SPC_Polygon* p = reinterpret_cast<SPC_Polygon*>(shape[0]->Clone());
+						//p->Transform(matrix);
 						sf::ConvexShape cv;
 						cv.setPointCount(p->vertexCount);
 
@@ -663,6 +752,8 @@ int main()
 						cv.setOutlineColor(color);
 						cv.setOutlineThickness(1);
 						window.draw(cv);
+
+						delete p;
 						break;
 					}
 
@@ -678,6 +769,7 @@ int main()
 
 		window.draw(fpsCounter);
 		window.display();
+		//continue;
 
 		for (auto& shape : shapes) //move shapes
 		{
@@ -722,4 +814,3 @@ int main()
 	shapes.clear();
 	return 0;
 }
-#endif

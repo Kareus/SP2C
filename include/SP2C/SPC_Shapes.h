@@ -4,9 +4,9 @@
 
 #include <cassert>
 #include <algorithm>
-#include "SPC_Vector.h"
-#include "SPC_Math.h"
-#include "SPC_Mat33.h"
+#include <SP2C/SPC_Vector.h>
+#include <SP2C/SPC_Math.h>
+#include <SP2C/SPC_Mat33.h>
 
 namespace SP2C
 {
@@ -39,15 +39,17 @@ namespace SP2C
 
 		SPC_AABB(Vec2 min, Vec2 max);
 
+		SPC_AABB(const SPC_AABB& aabb);
+
 		SPC_Shape* Clone() const override;
 
 		Vec2 GetCenter() const;
 
 		Vec2 GetExtent() const;
 
-		void GetVertices(Vec2* vertices);
+		void GetVertices(Vec2* vertices) const;
 
-		//set aabb vertices with size. center is (0, 0)
+		//set aabb vertices with size. top left is (0, 0)
 		void SetBox(double w, double h);
 
 		void Translate(double x, double y) override;
@@ -67,6 +69,8 @@ namespace SP2C
 		bool Contains(Vec2 v) const;
 
 		bool Contains(SPC_AABB aabb) const;
+
+		SPC_AABB& operator=(const SPC_AABB& aabb);
 	};
 
 	SPC_AABB CombineAABB(SPC_AABB a, SPC_AABB b);
@@ -80,6 +84,8 @@ namespace SP2C
 
 		SPC_Circle(double r = 0, Vec2 p = Vec2(0, 0));
 
+		SPC_Circle(const SPC_Circle& circle);
+
 		SPC_Shape* Clone() const override;
 
 		SPC_AABB ComputeAABB() const;
@@ -91,6 +97,9 @@ namespace SP2C
 		void Scale(double k) override;
 
 		void Transform(SPC_Mat33 matrix) override;
+
+		SPC_Circle& operator=(const SPC_Circle& circle);
+
 	};
 
 	struct SPC_Polygon : public SPC_Shape
@@ -102,6 +111,8 @@ namespace SP2C
 
 		SPC_Polygon();
 
+		SPC_Polygon(const SPC_Polygon& polygon);
+
 		SPC_Shape* Clone() const override;
 
 		Vec2 GetCenter();
@@ -109,7 +120,7 @@ namespace SP2C
 		//set polygon vertices from vector array. result is a convex hull. you can set vertices directly with ordering=false
 		void Set(Vec2* v, unsigned int count, bool ordering = true);
 
-		//set polygon vertices with size. center is (0, 0)
+		//set polygon vertices with size. top left is (0, 0)
 		void SetBox(double w, double h);
 
 		void Translate(double x, double y) override;
@@ -123,6 +134,8 @@ namespace SP2C
 		void Transform(SPC_Mat33 matrix) override;
 
 		SPC_AABB ComputeAABB() const;
+
+		SPC_Polygon& operator=(const SPC_Polygon& polygon);
 	};
 	
 	SPC_AABB ComputeAABB(SPC_Shape* shape);

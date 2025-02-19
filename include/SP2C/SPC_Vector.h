@@ -40,6 +40,8 @@ namespace SP2C
 		double Length();
 
 		void Normalize();
+
+		bool IsZero() const;
 	};
 
 	Vec2 operator*(double k, Vec2 v);

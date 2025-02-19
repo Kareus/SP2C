@@ -91,4 +91,9 @@ namespace SP2C
 	{
 		return { k * v.x, k * v.y };
 	}
+
+	bool Vec2::IsZero() const
+	{
+		return x == 0 && y == 0;
+	}
 }

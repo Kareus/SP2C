@@ -4,9 +4,9 @@
 
 #include <cmath>
 #include <algorithm>
-#include "SPC_Constants.h"
-#include "SPC_Vector.h"
-#include "SPC_Mat33.h"
+#include <SP2C/SPC_Constants.h>
+#include <SP2C/SPC_Vector.h>
+#include <SP2C/SPC_Mat33.h>
 
 namespace SP2C
 {
